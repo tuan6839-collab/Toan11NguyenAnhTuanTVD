@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src * data: blob: 'unsafe-inline' 'unsafe-eval'; script-src * 'unsafe-inline' 'unsafe-eval'; connect-src * 'unsafe-inline'; img-src * data: blob: 'unsafe-inline'; frame-src *; style-src * 'unsafe-inline'; font-src * data: blob: 'unsafe-inline';">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#2563eb">
+<style>
+:root{
+  --bg-1:#f8fbff; --bg-2:#eef7ff; --surface:#ffffff; --surface-2:#f8fbff;
+  --text-1:#16324f; --text-2:#49627d; --line:#dbe7f3; --line-strong:#bfd4e7;
+  --shadow:0 18px 50px rgba(38,70,108,.12); --shadow-soft:0 8px 24px rgba(38,70,108,.08);
+  --primary:#2563eb; --primary-2:#1d4ed8; --accent:#0ea5e9; --success:#16a34a;
+  --warning:#f59e0b; --danger:#ef4444; --base-size:32px; --opt-size:28px; --badge-size:50px;
+  --math-scale:112%; --radius-xl:24px; --radius-lg:18px; --radius-md:14px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+  background:radial-gradient(circle at top left,#ffffff 0%,#f6fbff 32%,transparent 55%),linear-gradient(180deg,var(--bg-1) 0%,var(--bg-2) 100%);
+  color:var(--text-1); min-height:100dvh; overflow-x:hidden; overflow-y:auto;
+}
+body.before-start .exam-shell, body.before-start .nav-arrow, body.before-start #floatingSubmitBtn{display:none!important}
+body.before-submit .btn-reveal, body.before-submit .btn-explain, body.before-submit .btn-check{display:none!important}
+body.after-submit .btn-reveal, body.after-submit .btn-explain{display:flex!important}
+.start-screen{
+  min-height:100dvh; display:flex; align-items:center; justify-content:center; padding:28px;
+  background:
+    radial-gradient(circle at 12% 14%, rgba(125,211,252,.45) 0 0, transparent 28%),
+    radial-gradient(circle at 88% 16%, rgba(167,139,250,.22) 0 0, transparent 26%),
+    radial-gradient(circle at 72% 88%, rgba(34,197,94,.18) 0 0, transparent 30%),
+    linear-gradient(135deg,#eff6ff 0%,#f8fbff 45%,#ecfeff 100%);
+  position:relative; overflow:hidden;
+}
+.start-screen::before,
+.start-screen::after{content:""; position:absolute; border-radius:999px; filter:blur(1px); opacity:.75; pointer-events:none;}
+.start-screen::before{width:360px;height:360px;left:-120px;bottom:-130px;background:rgba(14,165,233,.16)}
+.start-screen::after{width:300px;height:300px;right:-90px;top:-90px;background:rgba(37,99,235,.14)}
+.start-card{
+  width:min(96%,880px); background:rgba(255,255,255,.88); border:1px solid rgba(191,212,231,.9);
+  border-radius:34px; box-shadow:0 28px 80px rgba(37,99,235,.15); padding:34px; position:relative; overflow:hidden;
+  backdrop-filter:blur(16px);
+}
+.start-card::before{content:""; position:absolute; inset:0 0 auto 0; height:8px; background:linear-gradient(90deg,#2563eb,#0ea5e9,#22c55e,#f59e0b)}
+.start-card::after{content:"∑ π √x"; position:absolute; right:28px; bottom:12px; font-size:54px; font-weight:900; color:rgba(37,99,235,.055); letter-spacing:4px; pointer-events:none}
+.start-hero{display:flex; align-items:center; justify-content:center; gap:18px; margin:6px 0 8px}
+.start-logo{width:74px;height:74px;border-radius:24px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:linear-gradient(135deg,#2563eb 0%,#0ea5e9 55%,#22c55e 100%); color:#fff; font-size:38px;box-shadow:0 18px 36px rgba(37,99,235,.24);}
+.start-title{font-size:40px; line-height:1.15; font-weight:1000; text-align:left; margin:0; color:#0f2f57; letter-spacing:.3px}
+.start-subtitle{font-size:18px; color:var(--text-2); text-align:center; margin:8px 0 22px; font-weight:600}
+.exam-info-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:18px 0 22px}
+.exam-info-item{display:flex; align-items:center; gap:12px; padding:14px 16px; border-radius:20px;background:linear-gradient(180deg,#ffffff 0%,#f4f9ff 100%); border:1px solid #dbeafe; box-shadow:var(--shadow-soft);}
+.exam-info-icon{width:44px;height:44px;display:flex;align-items:center;justify-content:center;border-radius:16px;background:#e0f2fe;font-size:24px;flex-shrink:0}
+.exam-info-text{display:flex; flex-direction:column; gap:3px}
+.exam-info-label{font-size:14px; font-weight:900; color:#2563eb; text-transform:uppercase; letter-spacing:.35px}
+.exam-info-value{font-size:20px; font-weight:900; color:#16324f}
+.student-panel{background:linear-gradient(135deg,#f8fbff 0%,#eef7ff 100%); border:1px solid #dbeafe;border-radius:26px; padding:20px; box-shadow:inset 0 1px 0 rgba(255,255,255,.9);}
+.start-group{display:flex; flex-direction:column; gap:10px; margin-bottom:0}
+.start-label{font-size:18px; font-weight:900; display:flex; align-items:center; gap:8px; color:#16324f}
+.input-wrap{position:relative}
+.input-wrap .input-icon{position:absolute; left:18px; top:50%; transform:translateY(-50%); font-size:24px; opacity:.9}
+.start-input{width:100%; padding:18px 20px 18px 58px; border-radius:20px; border:2px solid #c7dcf2; outline:none;font-size:24px; font-weight:800; color:var(--text-1); background:#fff; box-shadow:var(--shadow-soft)}
+.start-input:focus{border-color:#60a5fa; box-shadow:0 0 0 6px rgba(59,130,246,.13)}
+.start-actions{display:flex; justify-content:center; margin-top:20px}
+.start-btn{min-width:240px; border:none; border-radius:20px; padding:16px 24px; cursor:pointer; color:#fff;background:linear-gradient(135deg,#2563eb 0%,#0ea5e9 100%); font-size:22px; font-weight:1000; box-shadow:0 16px 28px rgba(37,99,235,.24);display:flex; align-items:center; justify-content:center; gap:10px;}
+.start-btn:hover{transform:translateY(-3px); filter:brightness(1.03)}
+.start-btn.secondary{background:linear-gradient(135deg,#10b981 0%,#22c55e 100%); box-shadow:0 16px 28px rgba(34,197,94,.20)}
+.start-btn.secondary:hover{transform:translateY(-3px)}
+.start-actions.column{flex-direction:row; gap:14px; align-items:center; flex-wrap:wrap}
+.start-note{margin-top:18px; text-align:center; color:var(--text-2); font-size:15px; font-weight:600}
+.exam-topbar{
+  width:min(95%,1480px); margin:10px auto 0; display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;
+}
+.exam-user-badge,.exam-progress-badge{
+  background:#fff; border:1px solid var(--line-strong); border-radius:999px; padding:10px 18px; box-shadow:var(--shadow-soft); font-weight:800;
+}
+.exam-shell{display:flex; flex-direction:column; align-items:center; min-height:100dvh}
+.slide-container{
+  width:min(95%,1480px); height:calc(100dvh - 90px); margin:9px auto 18px; background:linear-gradient(180deg,#ffffff 0%, #fbfdff 100%);
+  border:1px solid rgba(191,212,231,.85); border-radius:var(--radius-xl); box-shadow:var(--shadow);
+  padding:22px 28px 20px; display:none; flex-direction:column; position:relative; overflow:hidden;
+}
+.slide-container::before{content:""; position:absolute; inset:0 0 auto 0; height:6px; background:linear-gradient(90deg,var(--primary),var(--accent),#22c55e)}
+.slide-container.active{display:flex; animation:slideIn .28s ease-out}
+.q-header{display:flex; justify-content:space-between; align-items:center; gap:16px; padding-bottom:14px; margin-bottom:14px; border-bottom:1px solid var(--line)}
+.header-left,.header-right{display:flex; align-items:center; gap:12px; flex-wrap:wrap}
+.part-badge{background:linear-gradient(135deg,var(--primary) 0%, var(--accent) 100%); color:#fff; padding:11px 22px; border-radius:999px; font-size:19px; font-weight:800; text-transform:uppercase; box-shadow:0 10px 20px rgba(37,99,235,.24)}
+.zoom-btn,.timer,.btn-exit-html,.slide-counter,.btn-action,.btn-option,.btn-tf,input.answer-input,#floatingSubmitBtn{transition:all .2s ease}
+.zoom-btn{width:44px;height:44px;border-radius:50%;border:1px solid var(--line-strong);background:#fff;color:var(--text-1);font-size:22px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-soft)}
+.zoom-btn:hover{transform:translateY(-1px);background:#f6fbff;border-color:#9fc1df}
+.timer{font-size:22px;color:var(--text-1);font-weight:800;background:linear-gradient(180deg,#ffffff 0%, #f4f9ff 100%);padding:10px 22px;border-radius:999px;cursor:pointer;border:1px solid var(--line-strong);box-shadow:var(--shadow-soft);display:flex;align-items:center;gap:8px;min-width:190px;justify-content:center}
+.timer.running{color:#b91c1c;background:linear-gradient(180deg,#fff4f4 0%, #fee2e2 100%);border-color:#fca5a5;animation:pulse 1s infinite}
+.btn-exit-html{background:linear-gradient(135deg,#fb7185 0%, var(--danger) 100%);color:#fff;border:none;padding:10px 22px;border-radius:999px;font-size:18px;font-weight:800;cursor:pointer;box-shadow:0 12px 24px rgba(239,68,68,.22)}
+.content-wrapper{flex-grow:1;overflow-y:auto;padding-right:10px;padding-bottom:20px;display:flex;flex-direction:column}
+.content-wrapper::-webkit-scrollbar{width:10px}
+.content-wrapper::-webkit-scrollbar-thumb{background:#cfe0ef;border-radius:999px;border:2px solid #f6fbff}
+.question-content{font-size:var(--base-size);font-weight:600;color:var(--text-1);margin-bottom:12px;line-height:1.55;text-align:justify}
+.q-label{display:inline-flex;align-items:center;justify-content:center;min-width:86px;padding:6px 14px;margin-right:10px;border-radius:999px;color:#fff;background:linear-gradient(135deg,#f59e0b 0%, #f97316 100%);font-weight:900;box-shadow:0 8px 18px rgba(249,115,22,.24)}
+mjx-container{font-size:var(--math-scale)!important;margin:0 3px!important}
+.img-container{text-align:center;margin:8px 0 14px;width:100%;padding:10px 0}
+.real-image{display:inline-block;max-width:92%;height:auto;max-height:410px;border-radius:18px;border:1px solid #cfe0ef;background:#fff;box-shadow:var(--shadow-soft);padding:6px;cursor:zoom-in}
+.options-stack{display:flex;flex-direction:column;gap:12px;width:100%}
+.options-stack .btn-option{width:100%;display:flex;align-items:flex-start}
+.options-stack .opt-text{flex:1}
+.btn-option{background:linear-gradient(180deg,#ffffff 0%, #f9fcff 100%);border:1px solid var(--line-strong);padding:16px 16px;font-size:var(--opt-size);border-radius:18px;cursor:pointer;text-align:left;font-weight:600;color:var(--text-1);display:flex;align-items:center;gap:14px;box-shadow:var(--shadow-soft)}
+.btn-option:hover{transform:translateY(-2px);border-color:#9fc1df;background:#ffffff}
+.opt-badge{width:var(--badge-size);height:var(--badge-size);background:linear-gradient(135deg,var(--success) 0%, #22c55e 100%);color:#fff;border-radius:14px;display:flex;justify-content:center;align-items:center;font-weight:900;flex-shrink:0;box-shadow:0 10px 18px rgba(34,197,94,.18)}
+.btn-option.selected-answer{border-color:#60a5fa!important;background:linear-gradient(180deg,#eff6ff 0%, #dbeafe 100%)!important}
+.btn-option.correct{border-color:#86efac!important;background:linear-gradient(180deg,#f0fdf4 0%, #dcfce7 100%)!important}
+.btn-option.wrong{border-color:#fca5a5!important;background:linear-gradient(180deg,#fff5f5 0%, #fee2e2 100%)!important}
+.tf-container{display:flex;flex-direction:column;gap:14px;margin:8px 0 22px}
+.tf-row{display:flex;align-items:center;justify-content:space-between;gap:18px;background:linear-gradient(180deg,#ffffff 0%, #f9fcff 100%);padding:16px 18px;border-radius:18px;border:1px solid #dbe7f3;box-shadow:var(--shadow-soft)}
+.tf-content{font-size:var(--opt-size);font-weight:600;color:var(--text-1);flex-grow:1}
+.tf-buttons{display:flex;gap:12px;min-width:180px}
+.btn-tf{border:1px solid var(--line-strong);background:linear-gradient(180deg,#ffffff 0%, #f4f9ff 100%);padding:11px 0;border-radius:12px;font-weight:900;cursor:pointer;flex:1;color:var(--text-2);text-align:center;font-size:22px;box-shadow:var(--shadow-soft)}
+.btn-tf.selected-answer{border-color:#60a5fa!important;background:#dbeafe!important;color:#1d4ed8!important}
+.btn-tf.user-correct{background:linear-gradient(135deg,#22c55e 0%, #16a34a 100%)!important;color:#fff!important;border-color:#16a34a!important}
+.btn-tf.user-wrong{background:linear-gradient(135deg,#f87171 0%, #ef4444 100%)!important;color:#fff!important;border-color:#dc2626!important}
+.btn-tf.reveal-true{border:2px solid #22c55e!important;color:#166534!important;background:#ecfdf5!important}
+.btn-tf.reveal-false{border:2px solid #ef4444!important;color:#b91c1c!important;background:#fef2f2!important}
+.short-answer-area{display:flex;flex-direction:column;align-items:center;margin:6px 0 28px;width:100%}
+.input-group{position:relative;width:min(74%, 820px)}
+input.answer-input{width:100%;padding:18px 24px;font-size:30px;border:2px solid #cdddeb;border-radius:18px;outline:none;text-align:center;font-weight:800;color:var(--text-1);background:linear-gradient(180deg,#ffffff 0%, #f8fbff 100%);box-shadow:var(--shadow-soft)}
+input.answer-input:focus{border-color:#93c5fd;background:#fff;box-shadow:0 0 0 5px rgba(59,130,246,.12)}
+.explanation-box{display:none;margin-top:18px;padding:22px 24px;background:linear-gradient(180deg,#f4fbff 0%, #e9f7ff 100%);border:1px solid #bae6fd;border-left:8px solid var(--accent);border-radius:18px;animation:fadeIn .35s;box-shadow:var(--shadow-soft)}
+.explanation-title{font-weight:900;color:#0369a1;margin-bottom:10px;font-size:26px;display:flex;align-items:center;gap:10px}
+.explanation-content{font-size:var(--opt-size);color:var(--text-1);line-height:1.65}
+.actions-area{display:flex;justify-content:center;align-items:center;gap:14px;flex-wrap:wrap;margin-top:auto;padding-top:16px;border-top:1px solid var(--line)}
+.btn-action{color:#fff;border:none;padding:12px 22px;font-size:18px;font-weight:800;border-radius:14px;cursor:pointer;min-width:170px;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 12px 22px rgba(15,23,42,.12)}
+.btn-reveal{background:linear-gradient(135deg,#f59e0b 0%, #f97316 100%)}
+.btn-check{background:linear-gradient(135deg,#3b82f6 0%, var(--primary-2) 100%)}
+.btn-explain{background:linear-gradient(135deg,#10b981 0%, #059669 100%)}
+.slide-counter{font-size:18px;font-weight:900;color:var(--text-1);background:linear-gradient(180deg,#ffffff 0%, #edf6ff 100%);padding:10px 22px;border-radius:999px;border:1px solid #d7e6f3;box-shadow:var(--shadow-soft)}
+.nav-arrow{position:fixed;top:50%;transform:translateY(-50%);width:58px;height:74px;background:rgba(37,99,235,.16);color:#fff;font-size:34px;border:none;border-radius:18px;cursor:pointer;transition:.25s;z-index:100;display:flex;justify-content:center;align-items:center;backdrop-filter:blur(10px);box-shadow:0 12px 28px rgba(37,99,235,.18)}
+.nav-arrow:hover{background:rgba(37,99,235,.9);transform:translateY(-50%) scale(1.04)}
+.nav-prev{left:10px}.nav-next{right:10px}
+#floatingSubmitBtn{position:fixed;right:18px;bottom:18px;z-index:150;background:linear-gradient(135deg,#16a34a 0%,#22c55e 100%);color:#fff;border:none;border-radius:999px;padding:16px 24px;font-size:20px;font-weight:900;box-shadow:0 18px 30px rgba(34,197,94,.24);cursor:pointer}
+#floatingSubmitBtn:hover{transform:translateY(-2px)}
+.result-overlay{position:fixed; inset:0; background:rgba(15,23,42,.38); backdrop-filter:blur(8px); display:none; align-items:center; justify-content:center; padding:18px; z-index:300}
+.result-overlay.show{display:flex}
+.result-card{width:min(96%,1200px); max-height:92dvh; overflow:auto; background:#fff; border-radius:28px; box-shadow:var(--shadow); border:1px solid var(--line-strong); padding:26px}
+.result-head{display:flex; justify-content:space-between; align-items:flex-start; gap:16px; flex-wrap:wrap; margin-bottom:16px}
+.result-title{font-size:34px; font-weight:900; color:#16324f}
+.result-summary{display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px; margin:14px 0 18px}
+.summary-box{background:#f8fbff; border:1px solid #dbe7f3; border-radius:18px; padding:14px 16px; box-shadow:var(--shadow-soft)}
+.summary-box .k{font-size:14px; color:var(--text-2); margin-bottom:6px}.summary-box .v{font-size:28px; font-weight:900}
+.result-table{width:100%; border-collapse:collapse; overflow:hidden; border-radius:18px; box-shadow:var(--shadow-soft)}
+.result-table th,.result-table td{border:1px solid #dbe7f3; padding:10px 12px; font-size:16px; vertical-align:top}
+.result-table th{background:#eff6ff; text-align:center}
+.result-table td:nth-child(1),.result-table td:nth-child(2),.result-table td:nth-child(5),.result-table td:nth-child(6){text-align:center}
+.badge-ok,.badge-no{display:inline-flex; align-items:center; justify-content:center; min-width:88px; padding:6px 10px; border-radius:999px; font-weight:800}
+.badge-ok{background:#dcfce7; color:#166534}.badge-no{background:#fee2e2; color:#b91c1c}
+.result-actions{display:flex; justify-content:flex-end; gap:12px; flex-wrap:wrap; margin-top:18px}
+.result-btn{border:none; border-radius:14px; padding:12px 18px; font-size:16px; font-weight:800; cursor:pointer}
+.result-btn.primary{background:#2563eb; color:#fff}.result-btn.gray{background:#e5eef8; color:#16324f}
+.ranking-overlay{position:fixed; inset:0; background:rgba(15,23,42,.38); backdrop-filter:blur(8px); display:none; align-items:center; justify-content:center; padding:18px; z-index:310}
+.ranking-overlay.show{display:flex}
+.ranking-card{width:min(96%,1000px); max-height:92dvh; overflow:auto; background:#fff; border-radius:28px; box-shadow:var(--shadow); border:1px solid var(--line-strong); padding:26px}
+.ranking-head{display:flex; justify-content:space-between; align-items:flex-start; gap:16px; flex-wrap:wrap; margin-bottom:16px}
+.ranking-title{font-size:34px; font-weight:900; color:#16324f}
+.ranking-note{color:#49627d; font-size:15px; margin-top:6px}
+.ranking-empty{padding:26px; text-align:center; color:var(--text-2); font-size:18px; background:#f8fbff; border:1px dashed #bfd4e7; border-radius:18px}
+.rank-badge{display:inline-flex; align-items:center; justify-content:center; min-width:42px; height:42px; border-radius:50%; font-weight:900; color:#fff}
+.rank-1{background:linear-gradient(135deg,#f59e0b 0%,#f97316 100%)}
+.rank-2{background:linear-gradient(135deg,#94a3b8 0%,#64748b 100%)}
+.rank-3{background:linear-gradient(135deg,#b45309 0%,#92400e 100%)}
+.rank-other{background:linear-gradient(135deg,#60a5fa 0%,#2563eb 100%)}
+
+.feedback-popup{position:absolute;top:45%;left:50%;transform:translate(-50%,-50%) scale(.75);display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;z-index:9999;pointer-events:none;transition:all .35s cubic-bezier(.175,.885,.32,1.275);filter:drop-shadow(0 18px 30px rgba(15,23,42,.2));background:rgba(255,255,255,.96);padding:20px 44px;border-radius:28px;text-align:center;border:4px solid transparent;backdrop-filter:blur(8px)}
+.feedback-popup.correct{border-color:#4ade80;color:#15803d}.feedback-popup.wrong{border-color:#f87171;color:#b91c1c}.feedback-popup .emoji{font-size:92px;line-height:1;margin-bottom:10px}.feedback-popup .message{font-size:36px;font-weight:900;white-space:nowrap}
+.feedback-popup.pop{transform:translate(-50%,-50%) scale(1);opacity:1}
+@keyframes slideIn{from{opacity:0;transform:translateY(18px) scale(.995)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(248,113,113,.35)}70%{box-shadow:0 0 0 14px rgba(248,113,113,0)}100%{box-shadow:0 0 0 0 rgba(248,113,113,0)}}
+@media (max-width:1024px){:root{--base-size:26px;--opt-size:23px;--badge-size:44px;--math-scale:106%}}
+@media (max-width:768px){
+  :root{--base-size:20px;--opt-size:18px;--badge-size:36px;--math-scale:100%}
+  .start-hero{flex-direction:column;text-align:center}.start-title{text-align:center;font-size:29px}.start-logo{width:64px;height:64px;font-size:34px}.exam-info-grid{grid-template-columns:1fr}.start-btn{width:100%; font-size:20px}.start-actions.column{align-items:stretch;flex-direction:column}.start-input{font-size:20px}
+  .exam-topbar{width:100%; padding:0 12px}.slide-container{width:100%;height:calc(100dvh - 78px);padding:14px;border-radius:0;margin:0;border:none}
+  .q-header{flex-direction:column;align-items:stretch}.header-left,.header-right{justify-content:space-between;width:100%}
+  .part-badge{font-size:15px;padding:8px 14px}.btn-exit-html,.timer{font-size:15px;padding:8px 14px;min-width:118px}.zoom-btn{width:36px;height:36px;font-size:18px}
+  .tf-row{flex-direction:column;align-items:stretch}.tf-content{margin-bottom:8px}.tf-buttons{min-width:100%}.input-group{width:100%}
+  input.answer-input{font-size:24px;padding:15px}.nav-arrow{display:none}.actions-area{gap:10px}.btn-action{flex:1;min-width:130px;font-size:15px;padding:10px}.slide-counter{font-size:15px;width:100%;text-align:center;order:3;margin-top:4px}
+  #floatingSubmitBtn{left:12px; right:12px; bottom:12px; border-radius:18px}
+}
+</style>
+<script>
+MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$']], processEscapes: true }, chtml: { scale: 1, matchFontHeight: false } };
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<style id="imath-options-stack-style">.options-stack{display:flex;flex-direction:column;gap:12px;width:100%;}.options-stack .btn-option{width:100%;display:flex;align-items:flex-start;}.options-stack .opt-text{flex:1;}</style></head>
+<body class="before-start before-submit">
+<div id="startScreen" class="start-screen">
+  <div class="start-card">
+    <div class="start-hero">
+      <div class="start-logo">∑</div>
+      <div>
+        <div class="start-title">TRẮC NGHIỆM MÔN TOÁN ONLINE</div>
+        <div class="start-subtitle">Sẵn sàng chinh phục từng câu hỏi — tự tin vào thi!</div>
+      </div>
+    </div>
+
+    <div class="exam-info-grid">
+      <div class="exam-info-item">
+        <div class="exam-info-icon">🏆</div>
+        <div class="exam-info-text">
+          <div class="exam-info-label">Tên kỳ thi</div>
+          <div class="exam-info-value" id="examNameDisplay">ĐỀ ÔN TẬP</div>
+        </div>
+      </div>
+      <div class="exam-info-item">
+        <div class="exam-info-icon">📐</div>
+        <div class="exam-info-text">
+          <div class="exam-info-label">Môn thi</div>
+          <div class="exam-info-value" id="subjectDisplay">TOÁN 11</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="student-panel">
+      <div class="start-group">
+        <label for="studentNameInput" class="start-label">👤 Họ tên học sinh</label>
+        <div class="input-wrap">
+          <span class="input-icon">✍️</span>
+          <input id="studentNameInput" class="start-input" type="text" placeholder="Nhập họ và tên học sinh" autocomplete="name">
+        </div>
+      </div>
+    </div>
+
+    <div class="start-actions column">
+      <button class="start-btn" onclick="startExam()"><span>🚀</span><span>Vào thi</span></button>
+      <button class="start-btn secondary" onclick="openRankingBoard()"><span>🥇</span><span>Bảng xếp hạng</span></button>
+    </div>
+    <div class="start-note">Kết quả được lưu trong trình duyệt để phục vụ thống kê và xếp hạng.</div>
+  </div>
+</div>
+
+<audio id="bgMusic" preload="auto"></audio>
+
+<div class="exam-shell">
+  <div class="exam-topbar">
+    <div id="studentBadge" class="exam-user-badge">👤 Học sinh: Chưa nhập</div>
+    <div id="progressBadge" class="exam-progress-badge">📝 Tiến độ: 0/0 câu</div>
+  </div>
+
+  <button class="nav-arrow nav-prev" onclick="prevSlide()" title="Câu trước">❮</button>
+  <button class="nav-arrow nav-next" onclick="nextSlide()" title="Câu sau">❯</button>
+
+  <button id="floatingSubmitBtn" onclick="submitExam()">NỘP BÀI</button>
+
+  <div class="slide-container" id="slide-0"><div class="q-header"><div class="header-left"><div class="part-badge">PHẦN I (Trắc nghiệm)</div></div><div class="header-right"><button class="zoom-btn" onclick="changeFontSize(-2)" title="Giảm cỡ chữ">A-</button><button class="zoom-btn" onclick="changeFontSize(2)" title="Tăng cỡ chữ">A+</button><button class="timer-edit-btn" type="button" onclick="openTimerModal(this)" title="Thiết lập thời gian">🕘</button><div class="timer" onclick="startTimer(this)" ondblclick="editTimer(this)" data-time="60" title="Click: Chạy/Dừng. Click đúp: Thiết lập thời gian.">⏳ Bắt đầu (01:00)</div><button class="btn-exit-html" onclick="document.title='EXIT_FULL_SCREEN'" title="Thoát chế độ trình chiếu (Phím Esc)">❌ Thoát</button></div></div><div class="content-wrapper"><div class="question-content"><span class="q-label">Câu 1:</span> Tìm tập xác định của hàm số $y=\frac{8 \sin{ x } - 5}{\cos{ x }}$.</div><div class="options-stack"><div class="btn-option" data-correct="false" onclick="checkChoice(this, false)"><div class="opt-badge">A</div> <div class="opt-text">$D=\mathbb{R}\backslash\{ k2\pi,k\in \mathbb{Z} \}$.</div></div><div class="btn-option" data-correct="true" onclick="checkChoice(this, true)"><div class="opt-badge">B</div> <div class="opt-text">$D=\mathbb{R}\backslash\{\frac{\pi}{2}+ k\pi,k\in \mathbb{Z} \}$.</div></div><div class="btn-option" data-correct="false" onclick="checkChoice(this, false)"><div class="opt-badge">C</div> <div class="opt-text">$D=\mathbb{R}\backslash\{\frac{\pi}{2}+ k2\pi,k\in \mathbb{Z} \}$.</div></div><div class="btn-option" data-correct="false" onclick="checkChoice(this, false)"><div class="opt-badge">D</div> <div class="opt-text">$D=\mathbb{R}\backslash\{ k\pi,k\in \mathbb{Z} \}$.</div></div></div><div class="actions-area"><button class="btn-action btn-reveal" onclick="revealAnswerMC(this)">👁 HIỆN ĐÁP ÁN</button><div class="slide-counter" id="counter-0">Câu ? / ?</div><button class="btn-action btn-explain" onclick="toggleExpl(this)">💡 XEM LỜI GIẢI</button></div><div class="explanation-box"><div class="explanation-title">📝 LỜI GIẢI CHI TIẾT:</div><div class="explanation-content">Tìm tập xác định của hàm số $y=\frac{8 \sin{ x } - 5}{\cos{ x }}$.<br><br>A. $D=\mathbb{R}\backslash\{ k2\pi,k\in \mathbb{Z} \}$.	   B. $D=\mathbb{R}\backslash\{\frac{\pi}{2}+ k\pi,k\in \mathbb{Z} \}$.	    C. $D=\mathbb{R}\backslash\{\frac{\pi}{2}+ k2\pi,k\in \mathbb{Z} \}$.	     D. $D=\mathbb{R}\backslash\{ k\pi,k\in \mathbb{Z} \}$.<br><br>Lời giải:<br> Chọn B</div></div></div></div><div class="slide-container" id="slide-1"><div class="q-header"><div class="header-left"><div class="part-badge">PHẦN I (Trắc nghiệm)</div></div><div class="header-right"><button class="zoom-btn" onclick="changeFontSize(-2)" title="Giảm cỡ chữ">A-</button><button class="zoom-btn" onclick="changeFontSize(2)" title="Tăng cỡ chữ">A+</button><button class="timer-edit-btn" type="button" onclick="openTimerModal(this)" title="Thiết lập thời gian">🕘</button><div class="timer" onclick="startTimer(this)" ondblclick="editTimer(this)" data-time="60" title="Click: Chạy/Dừng. Click đúp: Thiết lập thời gian.">⏳ Bắt đầu (01:00)</div><button class="btn-exit-html" onclick="document.title='EXIT_FULL_SCREEN'" title="Thoát chế độ trình chiếu (Phím Esc)">❌ Thoát</button></div></div><div class="content-wrapper"><div class="question-content"><span class="q-label">Câu 2:</span> Tìm tập xác định của hàm số $y=\frac{6 \cos{ x } - 5}{\sin{ 8 x }}$.</div><div class="options-stack"><div class="btn-option" data-correct="false" onclick="checkChoice(this, false)"><div class="opt-badge">A</div> <div class="opt-text">$D=\mathbb{R}\backslash\{\frac{\pi}{2}+ k\pi,k\in \mathbb{Z} \}$.</div></div><div class="btn-option" data-correct="true" onclick="checkChoice(this, true)"><div class="opt-badge">B</div> <div class="opt-text">$D=\mathbb{R}\backslash\{\frac{k\pi}{8},k\in \mathbb{Z} \}$.</div></div><div class="btn-option" data-correct="false" onclick="checkChoice(this, false)"><div class="opt-badge">C</div> <div class="opt-text">$D=\mathbb{R}\backslash\{ k\pi,k\in \mathbb{Z} \}$.</div></div><div class="btn-option" data-correct="false" onclick="checkChoice(this, false)"><div class="opt-badge">D</div> <div class="opt-text">$D=\mathbb{R}\backslash\{\frac{1}{16}\pi+ k\frac{\pi}{8},k\in \mathbb{Z} \}$.</div></div></div><div class="actions-area"><button class="btn-action btn-reveal" onclick="revealAnswerMC(this)">👁 HIỆN ĐÁP ÁN</button><div class="slide-counter" id="counter-1">Câu ? / ?</div><button class="btn-action btn-explain" onclick="toggleExpl(this)">💡 XEM LỜI GIẢI</button></div><div class="explanation-box"><div class="explanation-title">📝 LỜI GIẢI CHI TIẾT:</div><div class="explanation-content">Tìm tập xác định của hàm số $y=\frac{6 \cos{ x } - 5}{\sin{ 8 x }}$.<br><br>A. $D=\mathbb{R}\backslash\{\frac{\pi}{2}+ k\pi,k\in \mathbb{Z} \}$.	   B. $D=\mathbb{R}\backslash\{\frac{k\pi}{8},k\in \mathbb{Z} \}$.	    C. $D=\mathbb{R}\backslash\{ k\pi,k\in \mathbb{Z} \}$.	     D. $D=\mathbb{R}\backslash\{\frac{1}{16}\pi+ k\frac{\pi}{8},k\in \mathbb{Z} \}$.<br><br>Lời giải:<br> Chọn B</div></div></div></div><div class="slide-container" id="slide-2"><div class="q-header"><div class="header-left"><div class="part-badge">PHẦN I (Trắc nghiệm)</div></div><div class="header-right"><button class="zoom-btn" onclick="changeFontSize(-2)" title="Giảm cỡ chữ">A-</button><button class="zoom-btn" onclick="changeFontSize(2)" title="Tăng cỡ chữ">A+</button><button class="timer-edit-btn" type="button" onclick="openTimerModal(this)" title="Thiết lập thời gian">🕘</button><div class="timer" onclick="startTimer(this)" ondblclick="editTimer(this)" data-time="60" title="Click: Chạy/Dừng. Click đúp: Thiết lập thời gian.">⏳ Bắt đầu (01:00)</div><button class="btn-exit-html" onclick="document.title='EXIT_FULL_SCREEN'" title="Thoát chế độ trình chiếu (Phím Esc)">❌ Thoát</button></div></div><div class="content-wrapper"><div class="question-content"><span class="q-label">Câu 3:</span> Tập xác định của hàm số $y=\frac{1}{\sin 3x}$ là</div><div class="options-stack"><div class="btn-option" data-correct="false" onclick="checkChoice(this, false)"><div class="opt-badge">A</div> <div class="opt-text">$D=\mathbb{R}\backslash \{k\frac{2 \pi}{3}, k\in \mathbb{Z} \}$.</div></div><div class="btn-option" data-correct="true" onclick="checkChoice(this, true)"><div class="opt-badge">B</div> <div class="opt-text">$D=\mathbb{R}\backslash \{k\frac{\pi}{3}, k\in \mathbb{Z} \}$.</div></div><div class="btn-option" data-correct="false" onclick="checkChoice(this, false)"><div class="opt-badge">C</div> <div class="opt-text">$D=\mathbb{R}\backslash \{- \frac{\pi}{6}+k\frac{\pi}{6}, k\in \mathbb{Z} \}$.</div></div><div class="btn-option" data-correct="false" onclick="checkChoice(this, false)"><div class="opt-badge">D</div> <div class="opt-text">$D=\mathbb{R}\backslash \{- \frac{\pi}{6}+k3\pi, k\in \mathbb{Z} \}$.</div></div></div><div class="actions-area"><button class="btn-action btn-reveal" onclick="revealAnswerMC(this)">👁 HIỆN ĐÁP ÁN</button><div class="slide-counter" id="counter-2">Câu ? / ?</div><button class="btn-action btn-explain" onclick="toggleExpl(this)">💡 XEM LỜI GIẢI</button></div><div class="explanation-box"><div class="explanation-title">📝 LỜI GIẢI CHI TIẾT:</div><div class="explanation-content">Tập xác định của hàm số $y=\frac{1}{\sin 3x}$ là<br><br>A. $D=\mathbb{R}\backslash \{k\frac{2 \pi}{3}, k\in \mathbb{Z} \}$.	   B. $D=\mathbb{R}\backslash \{k\frac{\pi}{3}, k\in \mathbb{Z} \}$.<br>    C. $D=\mathbb{R}\backslash \{- \frac{\pi}{6}+k\frac{\pi}{6}, k\in \mathbb{Z} \}$.	     D. $D=\mathbb{R}\backslash \{- \frac{\pi}{6}+k3\pi, k\in \mathbb{Z} \}$.<br><br>Lời giải:<br> Chọn B <br> Điều kiện xác định:<br><br>$\sin 3x\ne 0 \Rightarrow 3 x\ne k\pi$<br><br>$\Rightarrow x\ne k\frac{\pi}{3}$.<br><br>$D=\mathbb{R}\backslash \{k\frac{\pi}{3}, k\in \mathbb{Z} \}$</div></div></div></div><div class="slide-container" id="slide-3"><div class="q-header"><div class="header-left"><div class="part-badge">PHẦN I (Trắc nghiệm)</div></div><div class="header-right"><button class="zoom-btn" onclick="changeFontSize(-2)" title="Giảm cỡ chữ">A-</button><button class="zoom-btn" onclick="changeFontSize(2)" title="Tăng cỡ chữ">A+</button><button class="timer-edit-btn" type="button" onclick="openTimerModal(this)" title="Thiết lập thời gian">🕘</button><div class="timer" onclick="startTimer(this)" ondblclick="editTimer(this)" data-time="60" title="Click: Chạy/Dừng. Click đúp: Thiết lập thời gian.">⏳ Bắt đầu (01:00)</div><button class="btn-exit-html" onclick="document.title='EXIT_FULL_SCREEN'" title="Thoát chế độ trình chiếu (Phím Esc)">❌ Thoát</button></div></div><div class="content-wrapper"><div class="question-content"><span class="q-label">Câu 4:</span> Tìm tập xác định của hàm số $y=\tan(4x+5\pi)$.</div><div class="options-stack"><div class="btn-option" data-correct="false" onclick="checkChoice(this, false)"><div class="opt-badge">A</div> <div class="opt-text">$D=\mathbb{R}\backslash\{ - \frac{9}{4}\pi + k \frac{1}{4}\pi\}$.</div></div><div class="btn-option" data-correct="false" onclick="checkChoice(this, false)"><div class="opt-badge">B</div> <div class="opt-text">$D=\mathbb{R}\backslash\{ -1\pi + k \frac{1}{4}\pi\}$.</div></div><div class="btn-option" data-correct="false" onclick="checkChoice(this, false)"><div class="opt-badge">C</div> <div class="opt-text">$D=\mathbb{R}\backslash\{ - \frac{1}{2}\pi + k \frac{1}{4}\pi\}$.</div></div><div class="btn-option" data-correct="true" onclick="checkChoice(this, true)"><div class="opt-badge">D</div> <div class="opt-text">$D=\mathbb{R}\backslash\{ - \frac{9}{8}\pi + k \frac{1}{4}\pi\}$.</div></div></div><div class="actions-area"><button class="btn-action btn-reveal" onclick="revealAnswerMC(this)">👁 HIỆN ĐÁP ÁN</button><div class="slide-counter" id="counter-3">Câu ? / ?</div><button class="btn-action btn-explain" onclick="toggleExpl(this)">💡 XEM LỜI GIẢI</button></div><div class="explanation-box"><div class="explanation-title">📝 LỜI GIẢI CHI TIẾT:</div><div class="explanation-content">Tìm tập xác định của hàm số $y=\tan(4x+5\pi)$.<br><br>A. $D=\mathbb{R}\backslash\{ - \frac{9}{4}\pi + k \frac{1}{4}\pi\}$.	   B. $D=\mathbb{R}\backslash\{ -1\pi + k \frac{1}{4}\pi\}$.	    C. $D=\mathbb{R}\backslash\{ - \frac{1}{2}\pi + k \frac{1}{4}\pi\}$.	     D. $D=\mathbb{R}\backslash\{ - \frac{9}{8}\pi + k \frac{1}{4}\pi\}$.<br><br>Lời giải:<br> Chọn D</div></div></div></div><div class="slide-container" id="slide-4"><div class="q-header"><div class="header-left"><div class="part-badge">PHẦN I (Trắc nghiệm)</div></div><div class="header-right"><button class="zoom-btn" onclick="changeFontSize(-2)" title="Giảm cỡ chữ">A-</button><button class="zoom-btn" onclick="changeFontSize(2)" title="Tăng cỡ chữ">A+</button><button class="timer-edit-btn" type="button" onclick="openTimerModal(this)" title="Thiết lập thời gian">🕘</button><div class="timer" onclick="startTimer(this)" ondblclick="editTimer(this)" data-time="60" title="Click: Chạy/Dừng. Click đúp: Thiết lập thời gian.">⏳ Bắt đầu (01:00)</div><button class="btn-exit-html" onclick="document.title='EXIT_FULL_SCREEN'" title="Thoát chế độ trình chiếu (Phím Esc)">❌ Thoát</button></div></div><div class="content-wrapper"><div class="question-content"><span class="q-label">Câu 5:</span> Tìm giá trị nhỏ nhất của hàm số ${y=-4\sin5x +10}$.</div><div class="options-stack"><div class="btn-option" data-correct="false" onclick="checkChoice(this, false)"><div class="opt-badge">A</div> <div class="opt-text">${-16}$.</div></div><div class="btn-option" data-correct="true" onclick="checkChoice(this, true)"><div class="opt-badge">B</div> <div class="opt-text">${6}$.</div></div><div class="btn-option" data-correct="false" onclick="checkChoice(this, false)"><div class="opt-badge">C</div> <div class="opt-text">${8}$.</div></div><div class="btn-option" data-correct="false" onclick="checkChoice(this, false)"><div class="opt-badge">D</div> <div class="opt-text">${14}$.</div></div></div><div class="actions-area"><button class="btn-action btn-reveal" onclick="revealAnswerMC(this)">👁 HIỆN ĐÁP ÁN</button><div class="slide-counter" id="counter-4">Câu ? / ?</div><button class="btn-action btn-explain" onclick="toggleExpl(this)">💡 XEM LỜI GIẢI</button></div><div class="explanation-box"><div class="explanation-title">📝 LỜI GIẢI CHI TIẾT:</div><div class="explanation-content">Tìm giá trị nhỏ nhất của hàm số ${y=-4\sin5x +10}$. <br><br>A. ${-16}$.	   B. ${6}$.	    C. ${8}$.	     D. ${14}$.<br><br>Lời giải:<br> Chọn B</div></div></div></div><div class="slide-container" id="slide-5"><div class="q-header"><div class="header-left"><div class="part-badge">PHẦN I (Trắc nghiệm)</div></div><div class="header-right"><button class="zoom-btn" onclick="changeFontSize(-2)" title="Giảm cỡ chữ">A-</button><button class="zoom-btn" onclick="changeFontSize(2)" title="Tăng cỡ chữ">A+</button><button class="timer-edit-btn" type="button" onclick="openTimerModal(this)" title="Thiết lập thời gian">🕘</button><div class="timer" onclick="startTimer(this)" ondblclick="editTimer(this)" data-time="60" title="Click: Chạy/Dừng. Click đúp: Thiết lập thời gian.">⏳ Bắt đầu (01:00)</div><button class="btn-exit-html" onclick="document.title='EXIT_FULL_SCREEN'" title="Thoát chế độ trình chiếu (Phím Esc)">❌ Thoát</button></div></div><div class="content-wrapper"><div class="question-content"><span class="q-label">Câu 6:</span> Tìm giá trị nhỏ nhất của hàm số ${y=9\cos^22x +10}$.</div><div class="options-stack"><div class="btn-option" data-correct="true" onclick="checkChoice(this, true)"><div class="opt-badge">A</div> <div class="opt-text">${10}$.</div></div><div class="btn-option" data-correct="false" onclick="checkChoice(this, false)"><div class="opt-badge">B</div> <div class="opt-text">${\frac{181}{10}}$.</div></div><div class="btn-option" data-correct="false" onclick="checkChoice(this, false)"><div class="opt-badge">C</div> <div class="opt-text">${\frac{163}{10}}$.</div></div><div class="btn-option" data-correct="false" onclick="checkChoice(this, false)"><div class="opt-badge">D</div> <div class="opt-text">${\frac{79}{5}}$.</div></div></div><div class="actions-area"><button class="btn-action btn-reveal" onclick="revealAnswerMC(this)">👁 HIỆN ĐÁP ÁN</button><div class="slide-counter" id="counter-5">Câu ? / ?</div><button class="btn-action btn-explain" onclick="toggleExpl(this)">💡 XEM LỜI GIẢI</button></div><div class="explanation-box"><div class="explanation-title">📝 LỜI GIẢI CHI TIẾT:</div><div class="explanation-content">Tìm giá trị nhỏ nhất của hàm số ${y=9\cos^22x +10}$. <br><br>A. ${10}$.	   B. ${\frac{181}{10}}$.	    C. ${\frac{163}{10}}$.	     D. ${\frac{79}{5}}$.<br><br>Lời giải:<br> Chọn A <br> Thay $\cos^22x=0$ và $\cos^22x=1$ vào hàm số ta được:<br><br>$\max y= 19, \min y =10$.</div></div></div></div><div class="slide-container" id="slide-6"><div class="q-header"><div class="header-left"><div class="part-badge">PHẦN I (Trắc nghiệm)</div></div><div class="header-right"><button class="zoom-btn" onclick="changeFontSize(-2)" title="Giảm cỡ chữ">A-</button><button class="zoom-btn" onclick="changeFontSize(2)" title="Tăng cỡ chữ">A+</button><button class="timer-edit-btn" type="button" onclick="openTimerModal(this)" title="Thiết lập thời gian">🕘</button><div class="timer" onclick="startTimer(this)" ondblclick="editTimer(this)" data-time="60" title="Click: Chạy/Dừng. Click đúp: Thiết lập thời gian.">⏳ Bắt đầu (01:00)</div><button class="btn-exit-html" onclick="document.title='EXIT_FULL_SCREEN'" title="Thoát chế độ trình chiếu (Phím Esc)">❌ Thoát</button></div></div><div class="content-wrapper"><div class="question-content"><span class="q-label">Câu 7:</span> Tìm giá trị lớn nhất của hàm số $y=- 5 \sin x - 2 \cos x $.</div><div class="options-stack"><div class="btn-option" data-correct="false" onclick="checkChoice(this, false)"><div class="opt-badge">A</div> <div class="opt-text">${\frac{45}{64}}$.</div></div><div class="btn-option" data-correct="false" onclick="checkChoice(this, false)"><div class="opt-badge">B</div> <div class="opt-text">${- \sqrt{29}}$.</div></div><div class="btn-option" data-correct="false" onclick="checkChoice(this, false)"><div class="opt-badge">C</div> <div class="opt-text">${-2}$.</div></div><div class="btn-option" data-correct="true" onclick="checkChoice(this, true)"><div class="opt-badge">D</div> <div class="opt-text">${\sqrt{29}}$.</div></div></div><div class="actions-area"><button class="btn-action btn-reveal" onclick="revealAnswerMC(this)">👁 HIỆN ĐÁP ÁN</button><div class="slide-counter" id="counter-6">Câu ? / ?</div><button class="btn-action btn-explain" onclick="toggleExpl(this)">💡 XEM LỜI GIẢI</button></div><div class="explanation-box"><div class="explanation-title">📝 LỜI GIẢI CHI TIẾT:</div><div class="explanation-content">Tìm giá trị lớn nhất của hàm số $y=- 5 \sin x   - 2 \cos x  $.<br><br>A. ${\frac{45}{64}}$.	   B. ${- \sqrt{29}}$.	    C. ${-2}$.	     D. ${\sqrt{29}}$.<br><br>Lời giải:<br> Chọn D <br> $y=- 5 \sin x   - 2 \cos x  $ có: $\max y= \sqrt{29}, \min y =-\sqrt{29}$.</div></div></div></div><div class="slide-container" id="slide-7"><div class="q-header"><div class="header-left"><div class="part-badge">PHẦN I (Trắc nghiệm)</div></div><div class="header-right"><button class="zoom-btn" onclick="changeFontSize(-2)" title="Giảm cỡ chữ">A-</button><button class="zoom-btn" onclick="changeFontSize(2)" title="Tăng cỡ chữ">A+</button><button class="timer-edit-btn" type="button" onclick="openTimerModal(this)" title="Thiết lập thời gian">🕘</button><div class="timer" onclick="startTimer(this)" ondblclick="editTimer(this)" data-time="60" title="Click: Chạy/Dừng. Click đúp: Thiết lập thời gian.">⏳ Bắt đầu (01:00)</div><button class="btn-exit-html" onclick="document.title='EXIT_FULL_SCREEN'" title="Thoát chế độ trình chiếu (Phím Esc)">❌ Thoát</button></div></div><div class="content-wrapper"><div class="question-content"><span class="q-label">Câu 8:</span> Tìm giá trị nhỏ nhất của hàm số $y=- 5 \sin x - 4 \cos x + 2$.</div><div class="options-stack"><div class="btn-option" data-correct="true" onclick="checkChoice(this, true)"><div class="opt-badge">A</div> <div class="opt-text">${2 - \sqrt{41}}$.</div></div><div class="btn-option" data-correct="false" onclick="checkChoice(this, false)"><div class="opt-badge">B</div> <div class="opt-text">${-3}$.</div></div><div class="btn-option" data-correct="false" onclick="checkChoice(this, false)"><div class="opt-badge">C</div> <div class="opt-text">${2 + \sqrt{41}}$.</div></div><div class="btn-option" data-correct="false" onclick="checkChoice(this, false)"><div class="opt-badge">D</div> <div class="opt-text">${\frac{307}{128}}$.</div></div></div><div class="actions-area"><button class="btn-action btn-reveal" onclick="revealAnswerMC(this)">👁 HIỆN ĐÁP ÁN</button><div class="slide-counter" id="counter-7">Câu ? / ?</div><button class="btn-action btn-explain" onclick="toggleExpl(this)">💡 XEM LỜI GIẢI</button></div><div class="explanation-box"><div class="explanation-title">📝 LỜI GIẢI CHI TIẾT:</div><div class="explanation-content">Tìm giá trị nhỏ nhất của hàm số $y=- 5 \sin x   - 4 \cos x   + 2$.<br><br>A. ${2 - \sqrt{41}}$.	   B. ${-3}$.	    C. ${2 + \sqrt{41}}$.	     D. ${\frac{307}{128}}$.<br><br>Lời giải:<br> Chọn A <br> $y=- 5 \sin x   - 4 \cos x   + 2$ có: $\max y= 2 + \sqrt{41}, \min y =2 - \sqrt{41}$.</div></div></div></div><div class="slide-container" id="slide-8"><div class="q-header"><div class="header-left"><div class="part-badge">PHẦN I (Trắc nghiệm)</div></div><div class="header-right"><button class="zoom-btn" onclick="changeFontSize(-2)" title="Giảm cỡ chữ">A-</button><button class="zoom-btn" onclick="changeFontSize(2)" title="Tăng cỡ chữ">A+</button><button class="timer-edit-btn" type="button" onclick="openTimerModal(this)" title="Thiết lập thời gian">🕘</button><div class="timer" onclick="startTimer(this)" ondblclick="editTimer(this)" data-time="60" title="Click: Chạy/Dừng. Click đúp: Thiết lập thời gian.">⏳ Bắt đầu (01:00)</div><button class="btn-exit-html" onclick="document.title='EXIT_FULL_SCREEN'" title="Thoát chế độ trình chiếu (Phím Esc)">❌ Thoát</button></div></div><div class="content-wrapper"><div class="question-content"><span class="q-label">Câu 9:</span> Tìm giá trị lớn nhất của hàm số $y=- 3 \sin^{2}{x } \cos^{2}{x } - 9$.</div><div class="options-stack"><div class="btn-option" data-correct="false" onclick="checkChoice(this, false)"><div class="opt-badge">A</div> <div class="opt-text">${-3}$.</div></div><div class="btn-option" data-correct="true" onclick="checkChoice(this, true)"><div class="opt-badge">B</div> <div class="opt-text">${-9}$.</div></div><div class="btn-option" data-correct="false" onclick="checkChoice(this, false)"><div class="opt-badge">C</div> <div class="opt-text">${1}$.</div></div><div class="btn-option" data-correct="false" onclick="checkChoice(this, false)"><div class="opt-badge">D</div> <div class="opt-text">${- \frac{39}{4}}$.</div></div></div><div class="actions-area"><button class="btn-action btn-reveal" onclick="revealAnswerMC(this)">👁 HIỆN ĐÁP ÁN</button><div class="slide-counter" id="counter-8">Câu ? / ?</div><button class="btn-action btn-explain" onclick="toggleExpl(this)">💡 XEM LỜI GIẢI</button></div><div class="explanation-box"><div class="explanation-title">📝 LỜI GIẢI CHI TIẾT:</div><div class="explanation-content">Tìm giá trị lớn nhất của hàm số $y=- 3 \sin^{2}{x } \cos^{2}{x } - 9$.<br><br>A. ${-3}$.	   B. ${-9}$.	    C. ${1}$.	     D. ${- \frac{39}{4}}$.<br><br>Lời giải:<br> Chọn B<br> Ta có $\sin^2{x}\cos^2{x}=\dfrac{1}{4}\sin^2{2x}\in\left[0;\dfrac{1}{4}\right]$.<br><br>Suy ra $y=-9-3\sin^2{x}\cos^2{x}=-9- \frac{3}{4}\sin^2x\in\left[- \frac{39}{4};-9\right]$.<br><br>Vậy $\min y=- \frac{39}{4},\ \max y=-9$.</div></div></div></div><div class="slide-container" id="slide-9"><div class="q-header"><div class="header-left"><div class="part-badge">PHẦN I (Trắc nghiệm)</div></div><div class="header-right"><button class="zoom-btn" onclick="changeFontSize(-2)" title="Giảm cỡ chữ">A-</button><button class="zoom-btn" onclick="changeFontSize(2)" title="Tăng cỡ chữ">A+</button><button class="timer-edit-btn" type="button" onclick="openTimerModal(this)" title="Thiết lập thời gian">🕘</button><div class="timer" onclick="startTimer(this)" ondblclick="editTimer(this)" data-time="60" title="Click: Chạy/Dừng. Click đúp: Thiết lập thời gian.">⏳ Bắt đầu (01:00)</div><button class="btn-exit-html" onclick="document.title='EXIT_FULL_SCREEN'" title="Thoát chế độ trình chiếu (Phím Esc)">❌ Thoát</button></div></div><div class="content-wrapper"><div class="question-content"><span class="q-label">Câu 10:</span> Tìm giá trị lớn nhất của hàm số $y=2 \sin^{2}{x } + 2 \cos{2 x }$.</div><div class="options-stack"><div class="btn-option" data-correct="false" onclick="checkChoice(this, false)"><div class="opt-badge">A</div> <div class="opt-text">${-11}$.</div></div><div class="btn-option" data-correct="false" onclick="checkChoice(this, false)"><div class="opt-badge">B</div> <div class="opt-text">${\frac{15}{2}}$.</div></div><div class="btn-option" data-correct="true" onclick="checkChoice(this, true)"><div class="opt-badge">C</div> <div class="opt-text">${2}$.</div></div><div class="btn-option" data-correct="false" onclick="checkChoice(this, false)"><div class="opt-badge">D</div> <div class="opt-text">${0}$.</div></div></div><div class="actions-area"><button class="btn-action btn-reveal" onclick="revealAnswerMC(this)">👁 HIỆN ĐÁP ÁN</button><div class="slide-counter" id="counter-9">Câu ? / ?</div><button class="btn-action btn-explain" onclick="toggleExpl(this)">💡 XEM LỜI GIẢI</button></div><div class="explanation-box"><div class="explanation-title">📝 LỜI GIẢI CHI TIẾT:</div><div class="explanation-content">Tìm giá trị lớn nhất của hàm số $y=2 \sin^{2}{x } + 2 \cos{2 x }$.<br><br>A. ${-11}$.	   B. ${\frac{15}{2}}$.	    C. ${2}$.	     D. ${0}$.<br><br>Lời giải:<br> Chọn C<br> Ta có $\sin^2{x}=\dfrac{1-\cos2x}{2}$ nên<br><br>$y=1+1\cos2x$.<br><br>Vì $\cos2x\in[-1;1]$ nên $y\in\left[0;2\right]$.<br><br>Vậy $\min y=0,\ \max y=2$.</div></div></div></div><div class="slide-container" id="slide-10"><div class="q-header"><div class="header-left"><div class="part-badge">PHẦN I (Trắc nghiệm)</div></div><div class="header-right"><button class="zoom-btn" onclick="changeFontSize(-2)" title="Giảm cỡ chữ">A-</button><button class="zoom-btn" onclick="changeFontSize(2)" title="Tăng cỡ chữ">A+</button><button class="timer-edit-btn" type="button" onclick="openTimerModal(this)" title="Thiết lập thời gian">🕘</button><div class="timer" onclick="startTimer(this)" ondblclick="editTimer(this)" data-time="60" title="Click: Chạy/Dừng. Click đúp: Thiết lập thời gian.">⏳ Bắt đầu (01:00)</div><button class="btn-exit-html" onclick="document.title='EXIT_FULL_SCREEN'" title="Thoát chế độ trình chiếu (Phím Esc)">❌ Thoát</button></div></div><div class="content-wrapper"><div class="question-content"><span class="q-label">Câu 11:</span> Tìm giá trị lớn nhất của hàm số $y=2 \cos^{2}{x } - 5 \cos{2 x }$.</div><div class="options-stack"><div class="btn-option" data-correct="false" onclick="checkChoice(this, false)"><div class="opt-badge">A</div> <div class="opt-text">$2$.</div></div><div class="btn-option" data-correct="true" onclick="checkChoice(this, true)"><div class="opt-badge">B</div> <div class="opt-text">$5$.</div></div><div class="btn-option" data-correct="false" onclick="checkChoice(this, false)"><div class="opt-badge">C</div> <div class="opt-text">$-3$.</div></div><div class="btn-option" data-correct="false" onclick="checkChoice(this, false)"><div class="opt-badge">D</div> <div class="opt-text">$4$.</div></div></div><div class="actions-area"><button class="btn-action btn-reveal" onclick="revealAnswerMC(this)">👁 HIỆN ĐÁP ÁN</button><div class="slide-counter" id="counter-10">Câu ? / ?</div><button class="btn-action btn-explain" onclick="toggleExpl(this)">💡 XEM LỜI GIẢI</button></div><div class="explanation-box"><div class="explanation-title">📝 LỜI GIẢI CHI TIẾT:</div><div class="explanation-content">Tìm giá trị lớn nhất của hàm số $y=2 \cos^{2}{x } - 5 \cos{2 x }$.<br><br>A. $2$.	   B. $5$.	    C. $-3$.	     D. $4$.<br><br>Lời giải:<br> Chọn B<br> $\cos^2{x}=\dfrac{1+\cos2x}{2}$ nên<br><br>$y=1-4\cos2x$.<br><br>Vì $\cos2x\in[-1;1]$ nên $y\in\left[-3;5\right]$.<br><br>Vậy $\min y=-3,\max y=5$.</div></div></div></div><div class="slide-container" id="slide-11"><div class="q-header"><div class="header-left"><div class="part-badge">PHẦN I (Trắc nghiệm)</div></div><div class="header-right"><button class="zoom-btn" onclick="changeFontSize(-2)" title="Giảm cỡ chữ">A-</button><button class="zoom-btn" onclick="changeFontSize(2)" title="Tăng cỡ chữ">A+</button><button class="timer-edit-btn" type="button" onclick="openTimerModal(this)" title="Thiết lập thời gian">🕘</button><div class="timer" onclick="startTimer(this)" ondblclick="editTimer(this)" data-time="60" title="Click: Chạy/Dừng. Click đúp: Thiết lập thời gian.">⏳ Bắt đầu (01:00)</div><button class="btn-exit-html" onclick="document.title='EXIT_FULL_SCREEN'" title="Thoát chế độ trình chiếu (Phím Esc)">❌ Thoát</button></div></div><div class="content-wrapper"><div class="question-content"><span class="q-label">Câu 12:</span> Tập giá trị của hàm số $y=- 2 \cos{\left(x + \frac{\pi}{3} \right)} - 5$ là</div><div class="options-stack"><div class="btn-option" data-correct="false" onclick="checkChoice(this, false)"><div class="opt-badge">A</div> <div class="opt-text">${[-9;0]}$.</div></div><div class="btn-option" data-correct="true" onclick="checkChoice(this, true)"><div class="opt-badge">B</div> <div class="opt-text">${[-7;-3]}$.</div></div><div class="btn-option" data-correct="false" onclick="checkChoice(this, false)"><div class="opt-badge">C</div> <div class="opt-text">${[-9;-3]}$.</div></div><div class="btn-option" data-correct="false" onclick="checkChoice(this, false)"><div class="opt-badge">D</div> <div class="opt-text">${[-7;-1]}$.</div></div></div><div class="actions-area"><button class="btn-action btn-reveal" onclick="revealAnswerMC(this)">👁 HIỆN ĐÁP ÁN</button><div class="slide-counter" id="counter-11">Câu ? / ?</div><button class="btn-action btn-explain" onclick="toggleExpl(this)">💡 XEM LỜI GIẢI</button></div><div class="explanation-box"><div class="explanation-title">📝 LỜI GIẢI CHI TIẾT:</div><div class="explanation-content">Tập giá trị của hàm số $y=- 2 \cos{\left(x + \frac{\pi}{3} \right)} - 5$ là<br><br>A. ${[-9;0]}$.	   B. ${[-7;-3]}$.	    C. ${[-9;-3]}$.	     D. ${[-7;-1]}$.<br><br>Lời giải:<br> Chọn B <br> $-1\le \cos{\left(x + \frac{\pi}{3} \right)} \le 1 \Rightarrow -2 \le - 2 \cos{\left(x + \frac{\pi}{3} \right)} \le 2 $$\Rightarrow -7\le - 2 \cos{\left(x + \frac{\pi}{3} \right)} - 5 \le -3$.<br><br>Vậy tập giá trị của hàm số là $T=[-7;-3]$.</div></div></div></div><div class="slide-container" id="slide-12"><div class="q-header"><div class="header-left"><div class="part-badge">PHẦN I (Trắc nghiệm)</div></div><div class="header-right"><button class="zoom-btn" onclick="changeFontSize(-2)" title="Giảm cỡ chữ">A-</button><button class="zoom-btn" onclick="changeFontSize(2)" title="Tăng cỡ chữ">A+</button><button class="timer-edit-btn" type="button" onclick="openTimerModal(this)" title="Thiết lập thời gian">🕘</button><div class="timer" onclick="startTimer(this)" ondblclick="editTimer(this)" data-time="60" title="Click: Chạy/Dừng. Click đúp: Thiết lập thời gian.">⏳ Bắt đầu (01:00)</div><button class="btn-exit-html" onclick="document.title='EXIT_FULL_SCREEN'" title="Thoát chế độ trình chiếu (Phím Esc)">❌ Thoát</button></div></div><div class="content-wrapper"><div class="question-content"><span class="q-label">Câu 13:</span> Hàm số nào sau đây là hàm số chẵn?</div><div class="options-stack"><div class="btn-option" data-correct="false" onclick="checkChoice(this, false)"><div class="opt-badge">A</div> <div class="opt-text">$y=\sin x +\tan x $.</div></div><div class="btn-option" data-correct="true" onclick="checkChoice(this, true)"><div class="opt-badge">B</div> <div class="opt-text">$y=\cos^2 x -\cos x $.</div></div><div class="btn-option" data-correct="false" onclick="checkChoice(this, false)"><div class="opt-badge">C</div> <div class="opt-text">$y=\sin x +\cos x $.</div></div><div class="btn-option" data-correct="false" onclick="checkChoice(this, false)"><div class="opt-badge">D</div> <div class="opt-text">$y=\tan x $.</div></div></div><div class="actions-area"><button class="btn-action btn-reveal" onclick="revealAnswerMC(this)">👁 HIỆN ĐÁP ÁN</button><div class="slide-counter" id="counter-12">Câu ? / ?</div><button class="btn-action btn-explain" onclick="toggleExpl(this)">💡 XEM LỜI GIẢI</button></div><div class="explanation-box"><div class="explanation-title">📝 LỜI GIẢI CHI TIẾT:</div><div class="explanation-content">Hàm số nào sau đây là hàm số chẵn?<br>A. $y=\sin x +\tan x $.	   B. $y=\cos^2 x -\cos x $.<br>    C. $y=\sin x +\cos x $.	     D. $y=\tan x $.<br><br>Lời giải:<br> Chọn B<br> Ta có $y=\cos^2 x -\cos x $ là hàm số chẵn vì $f(-{x})=f({x})$ với mọi ${x}$ thuộc tập xác định.</div></div></div></div><div class="slide-container" id="slide-13"><div class="q-header"><div class="header-left"><div class="part-badge">PHẦN I (Trắc nghiệm)</div></div><div class="header-right"><button class="zoom-btn" onclick="changeFontSize(-2)" title="Giảm cỡ chữ">A-</button><button class="zoom-btn" onclick="changeFontSize(2)" title="Tăng cỡ chữ">A+</button><button class="timer-edit-btn" type="button" onclick="openTimerModal(this)" title="Thiết lập thời gian">🕘</button><div class="timer" onclick="startTimer(this)" ondblclick="editTimer(this)" data-time="60" title="Click: Chạy/Dừng. Click đúp: Thiết lập thời gian.">⏳ Bắt đầu (01:00)</div><button class="btn-exit-html" onclick="document.title='EXIT_FULL_SCREEN'" title="Thoát chế độ trình chiếu (Phím Esc)">❌ Thoát</button></div></div><div class="content-wrapper"><div class="question-content"><span class="q-label">Câu 14:</span> Hàm số nào sau đây là hàm số lẻ?</div><div class="options-stack"><div class="btn-option" data-correct="false" onclick="checkChoice(this, false)"><div class="opt-badge">A</div> <div class="opt-text">$y=\sin x +\cos x $.</div></div><div class="btn-option" data-correct="true" onclick="checkChoice(this, true)"><div class="opt-badge">B</div> <div class="opt-text">$y=\sin x $.</div></div><div class="btn-option" data-correct="false" onclick="checkChoice(this, false)"><div class="opt-badge">C</div> <div class="opt-text">$y=\sin^2 x +2$.</div></div><div class="btn-option" data-correct="false" onclick="checkChoice(this, false)"><div class="opt-badge">D</div> <div class="opt-text">$y=\cot x +\cos x $.</div></div></div><div class="actions-area"><button class="btn-action btn-reveal" onclick="revealAnswerMC(this)">👁 HIỆN ĐÁP ÁN</button><div class="slide-counter" id="counter-13">Câu ? / ?</div><button class="btn-action btn-explain" onclick="toggleExpl(this)">💡 XEM LỜI GIẢI</button></div><div class="explanation-box"><div class="explanation-title">📝 LỜI GIẢI CHI TIẾT:</div><div class="explanation-content">Hàm số nào sau đây là hàm số lẻ?<br>A. $y=\sin x +\cos x $.	   B. $y=\sin x $.<br>    C. $y=\sin^2 x +2$.	     D. $y=\cot x +\cos x $.<br><br>Lời giải:<br> Chọn B<br> Ta có $y=\sin x $ là hàm số lẻ vì $f(-{x})=-f({x})$ với mọi ${x}$ thuộc tập xác định.</div></div></div></div><div class="slide-container" id="slide-14"><div class="q-header"><div class="header-left"><div class="part-badge">PHẦN I (Trắc nghiệm)</div></div><div class="header-right"><button class="zoom-btn" onclick="changeFontSize(-2)" title="Giảm cỡ chữ">A-</button><button class="zoom-btn" onclick="changeFontSize(2)" title="Tăng cỡ chữ">A+</button><button class="timer-edit-btn" type="button" onclick="openTimerModal(this)" title="Thiết lập thời gian">🕘</button><div class="timer" onclick="startTimer(this)" ondblclick="editTimer(this)" data-time="60" title="Click: Chạy/Dừng. Click đúp: Thiết lập thời gian.">⏳ Bắt đầu (01:00)</div><button class="btn-exit-html" onclick="document.title='EXIT_FULL_SCREEN'" title="Thoát chế độ trình chiếu (Phím Esc)">❌ Thoát</button></div></div><div class="content-wrapper"><div class="question-content"><span class="q-label">Câu 15:</span> Hàm số $y=- 9 \cot{\left(3 x \right)}$ có chu kỳ tuần hoàn là</div><div class="options-stack"><div class="btn-option" data-correct="false" onclick="checkChoice(this, false)"><div class="opt-badge">A</div> <div class="opt-text">$6 \pi$.</div></div><div class="btn-option" data-correct="false" onclick="checkChoice(this, false)"><div class="opt-badge">B</div> <div class="opt-text">$\frac{2 \pi}{3}$.</div></div><div class="btn-option" data-correct="false" onclick="checkChoice(this, false)"><div class="opt-badge">C</div> <div class="opt-text">$3 \pi$.</div></div><div class="btn-option" data-correct="true" onclick="checkChoice(this, true)"><div class="opt-badge">D</div> <div class="opt-text">$\frac{\pi}{3}$.</div></div></div><div class="actions-area"><button class="btn-action btn-reveal" onclick="revealAnswerMC(this)">👁 HIỆN ĐÁP ÁN</button><div class="slide-counter" id="counter-14">Câu ? / ?</div><button class="btn-action btn-explain" onclick="toggleExpl(this)">💡 XEM LỜI GIẢI</button></div><div class="explanation-box"><div class="explanation-title">📝 LỜI GIẢI CHI TIẾT:</div><div class="explanation-content">Hàm số $y=- 9 \cot{\left(3 x \right)}$ có chu kỳ tuần hoàn là<br><br>A. $6 \pi$.	   B. $\frac{2 \pi}{3}$.<br>    C. $3 \pi$.	     D. $\frac{\pi}{3}$.<br><br>Lời giải:<br> Chọn D <br> Hàm số đã cho có chu kỳ tuần hoàn là: $T=\dfrac{\pi }{|3|}=\frac{\pi}{3}$.</div></div></div></div><div class="slide-container" id="slide-15"><div class="q-header"><div class="header-left"><div class="part-badge">PHẦN II (Đúng-Sai)</div></div><div class="header-right"><button class="zoom-btn" onclick="changeFontSize(-2)" title="Giảm cỡ chữ">A-</button><button class="zoom-btn" onclick="changeFontSize(2)" title="Tăng cỡ chữ">A+</button><button class="timer-edit-btn" type="button" onclick="openTimerModal(this)" title="Thiết lập thời gian">🕘</button><div class="timer" onclick="startTimer(this)" ondblclick="editTimer(this)" data-time="60" title="Click: Chạy/Dừng. Click đúp: Thiết lập thời gian.">⏳ Bắt đầu (01:00)</div><button class="btn-exit-html" onclick="document.title='EXIT_FULL_SCREEN'" title="Thoát chế độ trình chiếu (Phím Esc)">❌ Thoát</button></div></div><div class="content-wrapper"><div class="question-content"><span class="q-label">Câu 1:</span> Cho hàm số $y=4 \cos{\left(2 x \right)} + 7$ . Xét tính đúng-sai của các khẳng định sau.</div><div class="tf-container"><div class="tf-row" data-correct="true"><div class="tf-content"><b>a)</b> Hàm số có tập xác định là $D=\mathbb{R}$.</div><div class="tf-buttons"><div class="btn-tf" onclick="checkTF(this, true)">Đ</div><div class="btn-tf" onclick="checkTF(this, false)">S</div></div></div><div class="tf-row" data-correct="false"><div class="tf-content"><b>b)</b> Giá trị lớn nhất của hàm số bằng ${15}$.</div><div class="tf-buttons"><div class="btn-tf" onclick="checkTF(this, true)">Đ</div><div class="btn-tf" onclick="checkTF(this, false)">S</div></div></div><div class="tf-row" data-correct="true"><div class="tf-content"><b>c)</b> Giá trị nhỏ nhất của hàm số bằng ${3}$.</div><div class="tf-buttons"><div class="btn-tf" onclick="checkTF(this, true)">Đ</div><div class="btn-tf" onclick="checkTF(this, false)">S</div></div></div><div class="tf-row" data-correct="true"><div class="tf-content"><b>d)</b> Tập giá trị của hàm số là $T=[3;11]$.</div><div class="tf-buttons"><div class="btn-tf" onclick="checkTF(this, true)">Đ</div><div class="btn-tf" onclick="checkTF(this, false)">S</div></div></div></div><div class="actions-area"><button class="btn-action btn-reveal" onclick="revealAnswerTF(this)">👁 HIỆN ĐÁP ÁN</button><div class="slide-counter" id="counter-15">Câu ? / ?</div><button class="btn-action btn-explain" onclick="toggleExpl(this)">💡 XEM LỜI GIẢI</button></div><div class="explanation-box"><div class="explanation-title">📝 LỜI GIẢI CHI TIẾT:</div><div class="explanation-content">Cho hàm số $y=4 \cos{\left(2 x \right)} + 7$ . Xét tính đúng-sai của các khẳng định sau. <br><br>a)  Hàm số có tập xác định là $D=\mathbb{R}$.<br>b) Giá trị lớn nhất của hàm số bằng ${15}$.<br>c)  Giá trị nhỏ nhất của hàm số bằng ${3}$.<br>d)  Tập giá trị của hàm số là $T=[3;11]$.<br><br>Lời giải:<br> a-đúng, b-sai, c-đúng, d-đúng.<br><br> a) Khẳng định đã cho là khẳng định đúng.<br><br> Hàm số có tập xác định là $D=\mathbb{R}$<br>b) Khẳng định đã cho là khẳng định sai.<br><br> $-1\le \cos{\left(2 x \right)} \le 1 \Rightarrow -4 \le 4 \cos{\left(2 x \right)} \le 4 $$\Rightarrow 3\le 4 \cos{\left(2 x \right)} + 7 \le 11$.<br><br>Vậy giá trị lớn nhất của hàm số bằng ${11}$<br>c) Khẳng định đã cho là khẳng định đúng.<br><br> $-1\le \cos{\left(2 x \right)} \le 1 \Rightarrow -4 \le 4 \cos{\left(2 x \right)} \le 4 $$\Rightarrow 3\le 4 \cos{\left(2 x \right)} + 7 \le 11$.<br><br>Vậy giá trị nhỏ nhất của hàm số bằng ${3}$<br>d) Khẳng định đã cho là khẳng định đúng.<br><br> Vì $ 3\le 4 \cos{\left(2 x \right)} + 7 \le 11$ nên tập giá trị của hàm số là $T=[3;11]$.</div></div></div></div><div class="slide-container" id="slide-16"><div class="q-header"><div class="header-left"><div class="part-badge">PHẦN II (Đúng-Sai)</div></div><div class="header-right"><button class="zoom-btn" onclick="changeFontSize(-2)" title="Giảm cỡ chữ">A-</button><button class="zoom-btn" onclick="changeFontSize(2)" title="Tăng cỡ chữ">A+</button><button class="timer-edit-btn" type="button" onclick="openTimerModal(this)" title="Thiết lập thời gian">🕘</button><div class="timer" onclick="startTimer(this)" ondblclick="editTimer(this)" data-time="60" title="Click: Chạy/Dừng. Click đúp: Thiết lập thời gian.">⏳ Bắt đầu (01:00)</div><button class="btn-exit-html" onclick="document.title='EXIT_FULL_SCREEN'" title="Thoát chế độ trình chiếu (Phím Esc)">❌ Thoát</button></div></div><div class="content-wrapper"><div class="question-content"><span class="q-label">Câu 2:</span> Cho hàm số $y=6 - 4 \sin^{2}{\left(x \right)}$ . Xét tính đúng-sai của các khẳng định sau.</div><div class="tf-container"><div class="tf-row" data-correct="false"><div class="tf-content"><b>a)</b> Hàm số có tập xác định là $D=[-3;10]$ .</div><div class="tf-buttons"><div class="btn-tf" onclick="checkTF(this, true)">Đ</div><div class="btn-tf" onclick="checkTF(this, false)">S</div></div></div><div class="tf-row" data-correct="false"><div class="tf-content"><b>b)</b> Giá trị lớn nhất của hàm số bằng ${8}$.</div><div class="tf-buttons"><div class="btn-tf" onclick="checkTF(this, true)">Đ</div><div class="btn-tf" onclick="checkTF(this, false)">S</div></div></div><div class="tf-row" data-correct="false"><div class="tf-content"><b>c)</b> Giá trị nhỏ nhất của hàm số bằng ${1}$.</div><div class="tf-buttons"><div class="btn-tf" onclick="checkTF(this, true)">Đ</div><div class="btn-tf" onclick="checkTF(this, false)">S</div></div></div><div class="tf-row" data-correct="false"><div class="tf-content"><b>d)</b> Tập giá trị của hàm số là $T=[1;8]$.</div><div class="tf-buttons"><div class="btn-tf" onclick="checkTF(this, true)">Đ</div><div class="btn-tf" onclick="checkTF(this, false)">S</div></div></div></div><div class="actions-area"><button class="btn-action btn-reveal" onclick="revealAnswerTF(this)">👁 HIỆN ĐÁP ÁN</button><div class="slide-counter" id="counter-16">Câu ? / ?</div><button class="btn-action btn-explain" onclick="toggleExpl(this)">💡 XEM LỜI GIẢI</button></div><div class="explanation-box"><div class="explanation-title">📝 LỜI GIẢI CHI TIẾT:</div><div class="explanation-content">Cho hàm số $y=6 - 4 \sin^{2}{\left(x \right)}$ . Xét tính đúng-sai của các khẳng định sau. <br><br>a) Hàm số có tập xác định là $D=[-3;10]$ .<br>b) Giá trị lớn nhất của hàm số bằng ${8}$.<br>c)  Giá trị nhỏ nhất của hàm số bằng ${1}$.<br>d) Tập giá trị của hàm số là $T=[1;8]$.<br><br>Lời giải:<br> a-sai, b-sai, c-sai, d-sai.<br><br> a) Khẳng định đã cho là khẳng định sai.<br><br> Hàm số có tập xác định là $D=\mathbb{R}$<br>b) Khẳng định đã cho là khẳng định sai.<br><br> $0\le \sin^{2}{\left(x \right)} \le 1 $$\Rightarrow 2\le 6 - 4 \sin^{2}{\left(x \right)} \le 6$.<br><br>Vậy giá trị lớn nhất của hàm số bằng ${6}$<br>c) Khẳng định đã cho là khẳng định sai.<br><br> $0\le \sin^{2}{\left(x \right)} \le 1 $$\Rightarrow 2\le 6 - 4 \sin^{2}{\left(x \right)} \le 6$.<br><br>Vậy giá trị nhỏ nhất của hàm số bằng ${2}$<br>d) Khẳng định đã cho là khẳng định sai.<br><br> Vì $ 2\le 6 - 4 \sin^{2}{\left(x \right)} \le 6$ nên tập giá trị của hàm số là $T=[2;6]$.</div></div></div></div><div class="slide-container" id="slide-17"><div class="q-header"><div class="header-left"><div class="part-badge">PHẦN II (Đúng-Sai)</div></div><div class="header-right"><button class="zoom-btn" onclick="changeFontSize(-2)" title="Giảm cỡ chữ">A-</button><button class="zoom-btn" onclick="changeFontSize(2)" title="Tăng cỡ chữ">A+</button><button class="timer-edit-btn" type="button" onclick="openTimerModal(this)" title="Thiết lập thời gian">🕘</button><div class="timer" onclick="startTimer(this)" ondblclick="editTimer(this)" data-time="60" title="Click: Chạy/Dừng. Click đúp: Thiết lập thời gian.">⏳ Bắt đầu (01:00)</div><button class="btn-exit-html" onclick="document.title='EXIT_FULL_SCREEN'" title="Thoát chế độ trình chiếu (Phím Esc)">❌ Thoát</button></div></div><div class="content-wrapper"><div class="question-content"><span class="q-label">Câu 3:</span> Cho hàm số $y=- 4 \sin{\left(3 x \right)} - 8$ . Xét tính đúng-sai của các khẳng định sau.</div><div class="tf-container"><div class="tf-row" data-correct="false"><div class="tf-content"><b>a)</b> Tập xác định của hàm số là $D=[-4;4]$.</div><div class="tf-buttons"><div class="btn-tf" onclick="checkTF(this, true)">Đ</div><div class="btn-tf" onclick="checkTF(this, false)">S</div></div></div><div class="tf-row" data-correct="false"><div class="tf-content"><b>b)</b> Hàm số đã cho là hàm số lẻ.</div><div class="tf-buttons"><div class="btn-tf" onclick="checkTF(this, true)">Đ</div><div class="btn-tf" onclick="checkTF(this, false)">S</div></div></div><div class="tf-row" data-correct="true"><div class="tf-content"><b>c)</b> Tập giá trị của hàm số đã cho là $T={[-12;-4]}$.</div><div class="tf-buttons"><div class="btn-tf" onclick="checkTF(this, true)">Đ</div><div class="btn-tf" onclick="checkTF(this, false)">S</div></div></div><div class="tf-row" data-correct="false"><div class="tf-content"><b>d)</b> Đồ thị cắt trục tung tại điểm có tung độ bằng ${-7}$.</div><div class="tf-buttons"><div class="btn-tf" onclick="checkTF(this, true)">Đ</div><div class="btn-tf" onclick="checkTF(this, false)">S</div></div></div></div><div class="actions-area"><button class="btn-action btn-reveal" onclick="revealAnswerTF(this)">👁 HIỆN ĐÁP ÁN</button><div class="slide-counter" id="counter-17">Câu ? / ?</div><button class="btn-action btn-explain" onclick="toggleExpl(this)">💡 XEM LỜI GIẢI</button></div><div class="explanation-box"><div class="explanation-title">📝 LỜI GIẢI CHI TIẾT:</div><div class="explanation-content">Cho hàm số $y=- 4 \sin{\left(3 x \right)} - 8$ . Xét tính đúng-sai của các khẳng định sau. <br><br>a) Tập xác định của hàm số là $D=[-4;4]$.<br>b) Hàm số đã cho là hàm số lẻ.<br>c)  Tập giá trị của hàm số đã cho là $T={[-12;-4]}$.<br>d)  Đồ thị cắt trục tung tại điểm có tung độ bằng ${-7}$.<br><br>Lời giải:<br> a-sai, b-sai, c-đúng, d-sai.<br><br> a) Khẳng định đã cho là khẳng định sai.<br><br> Tập xác định của hàm số là $D=\mathbb{R}$.<br>b) Khẳng định đã cho là khẳng định sai.<br><br> Ta có: Với mọi $x\in \mathbb{R}$ thì $-x\in \mathbb{R}$.<br><br>$f(-x)=4 \sin{\left(3 x \right)} - 8\ne f(x), f(-x)\ne -f(x)$.<br><br>Vậy hàm số $y=- 4 \sin{\left(3 x \right)} - 8$ là hàm số không chẵn, không lẻ.<br>c) Khẳng định đã cho là khẳng định đúng.<br><br> Ta có: $-12 \le - 4 \sin{\left(3 x \right)} - 8 \le -4$ nên tập giá trị là ${[-12;-4]}$<br>d) Khẳng định đã cho là khẳng định sai.<br><br> Cho $x=0\Rightarrow y=-8$. Suy ra đồ thị cắt trục tung tại điểm có tung độ bằng ${-8}$.</div></div></div></div><div class="slide-container" id="slide-18"><div class="q-header"><div class="header-left"><div class="part-badge">PHẦN II (Đúng-Sai)</div></div><div class="header-right"><button class="zoom-btn" onclick="changeFontSize(-2)" title="Giảm cỡ chữ">A-</button><button class="zoom-btn" onclick="changeFontSize(2)" title="Tăng cỡ chữ">A+</button><button class="timer-edit-btn" type="button" onclick="openTimerModal(this)" title="Thiết lập thời gian">🕘</button><div class="timer" onclick="startTimer(this)" ondblclick="editTimer(this)" data-time="60" title="Click: Chạy/Dừng. Click đúp: Thiết lập thời gian.">⏳ Bắt đầu (01:00)</div><button class="btn-exit-html" onclick="document.title='EXIT_FULL_SCREEN'" title="Thoát chế độ trình chiếu (Phím Esc)">❌ Thoát</button></div></div><div class="content-wrapper"><div class="question-content"><span class="q-label">Câu 4:</span> Cho dao động điều hòa có phương trình $y=46\cos 2x$. Xét tính đúng-sai của các khẳng định sau:</div><div class="tf-container"><div class="tf-row" data-correct="false"><div class="tf-content"><b>a)</b> Giá trị của hàm số tại ${x=\frac{2 \pi}{3}}$ bằng ${-21}$.</div><div class="tf-buttons"><div class="btn-tf" onclick="checkTF(this, true)">Đ</div><div class="btn-tf" onclick="checkTF(this, false)">S</div></div></div><div class="tf-row" data-correct="false"><div class="tf-content"><b>b)</b> Tập giá trị của hàm số là ${\left[0;46\right]}$.</div><div class="tf-buttons"><div class="btn-tf" onclick="checkTF(this, true)">Đ</div><div class="btn-tf" onclick="checkTF(this, false)">S</div></div></div><div class="tf-row" data-correct="false"><div class="tf-content"><b>c)</b> Hàm số có thể viết dưới dạng $y=46\left(2\sin^2x-1\right)$.</div><div class="tf-buttons"><div class="btn-tf" onclick="checkTF(this, true)">Đ</div><div class="btn-tf" onclick="checkTF(this, false)">S</div></div></div><div class="tf-row" data-correct="true"><div class="tf-content"><b>d)</b> Một dao động điều hòa khác cùng phương là $y=46\cos\left(2x+\frac{5 \pi}{6}\right)$. Khi đó tổng hợp hai dao động là $y=- 23 \sqrt{2} + 23 \sqrt{6}\cos\left(2x+\frac{5 \pi}{12}\right)$.</div><div class="tf-buttons"><div class="btn-tf" onclick="checkTF(this, true)">Đ</div><div class="btn-tf" onclick="checkTF(this, false)">S</div></div></div></div><div class="actions-area"><button class="btn-action btn-reveal" onclick="revealAnswerTF(this)">👁 HIỆN ĐÁP ÁN</button><div class="slide-counter" id="counter-18">Câu ? / ?</div><button class="btn-action btn-explain" onclick="toggleExpl(this)">💡 XEM LỜI GIẢI</button></div><div class="explanation-box"><div class="explanation-title">📝 LỜI GIẢI CHI TIẾT:</div><div class="explanation-content">Cho dao động điều hòa có phương trình $y=46\cos 2x$. Xét tính đúng-sai của các khẳng định sau:<br><br>a) Giá trị của hàm số tại ${x=\frac{2 \pi}{3}}$ bằng ${-21}$.<br>b) Tập giá trị của hàm số là ${\left[0;46\right]}$.<br>c) Hàm số có thể viết dưới dạng $y=46\left(2\sin^2x-1\right)$.<br>d)  Một dao động điều hòa khác cùng phương là $y=46\cos\left(2x+\frac{5 \pi}{6}\right)$. Khi đó tổng hợp hai dao động là $y=- 23 \sqrt{2} + 23 \sqrt{6}\cos\left(2x+\frac{5 \pi}{12}\right)$.<br><br>Lời giải:<br> a-sai, b-sai, c-sai, d-đúng.<br><br> a) Khẳng định đã cho là khẳng định sai.<br><br> Ta có $y(\frac{2 \pi}{3})=-23$.<br>b) Khẳng định đã cho là khẳng định sai.<br><br> Do $-1\le \cos2x\le 1$ nên $-46\le y\le 46$. Vậy tập giá trị là $\left[-46;46\right]$.<br><br>c) Khẳng định đã cho là khẳng định sai.<br><br> $y=46(2\cos^2x-1)=46\left(1-2\sin^2x\right)=46\left(\cos^2x-\sin^2x\right)$.<br>d) Khẳng định đã cho là khẳng định đúng.<br><br> $y=46\cos 2x+46\cos\left(2x+\frac{5 \pi}{6}\right)$<br><br>$=92\cos\left(\dfrac{2x+2x+\frac{5 \pi}{6}}{2}\right)\cos(- \frac{5 \pi}{12})$<br><br>$=- 23 \sqrt{2} + 23 \sqrt{6}\cos\left(2x+\frac{5 \pi}{12}\right)$.</div></div></div></div><div class="slide-container" id="slide-19"><div class="q-header"><div class="header-left"><div class="part-badge">PHẦN II (Đúng-Sai)</div></div><div class="header-right"><button class="zoom-btn" onclick="changeFontSize(-2)" title="Giảm cỡ chữ">A-</button><button class="zoom-btn" onclick="changeFontSize(2)" title="Tăng cỡ chữ">A+</button><button class="timer-edit-btn" type="button" onclick="openTimerModal(this)" title="Thiết lập thời gian">🕘</button><div class="timer" onclick="startTimer(this)" ondblclick="editTimer(this)" data-time="60" title="Click: Chạy/Dừng. Click đúp: Thiết lập thời gian.">⏳ Bắt đầu (01:00)</div><button class="btn-exit-html" onclick="document.title='EXIT_FULL_SCREEN'" title="Thoát chế độ trình chiếu (Phím Esc)">❌ Thoát</button></div></div><div class="content-wrapper"><div class="question-content"><span class="q-label">Câu 5:</span> Cho dao động điều hòa có phương trình $y=10\sin 2x$. Xét tính đúng-sai của các khẳng định sau:</div><div class="tf-container"><div class="tf-row" data-correct="true"><div class="tf-content"><b>a)</b> Giá trị của hàm số tại ${x=\frac{3 \pi}{4}}$ bằng ${-10}$.</div><div class="tf-buttons"><div class="btn-tf" onclick="checkTF(this, true)">Đ</div><div class="btn-tf" onclick="checkTF(this, false)">S</div></div></div><div class="tf-row" data-correct="false"><div class="tf-content"><b>b)</b> Tập giá trị của hàm số là $\mathbb{R}$.</div><div class="tf-buttons"><div class="btn-tf" onclick="checkTF(this, true)">Đ</div><div class="btn-tf" onclick="checkTF(this, false)">S</div></div></div><div class="tf-row" data-correct="true"><div class="tf-content"><b>c)</b> Hàm số có thể viết dưới dạng $y=20\sin x \cos x$.</div><div class="tf-buttons"><div class="btn-tf" onclick="checkTF(this, true)">Đ</div><div class="btn-tf" onclick="checkTF(this, false)">S</div></div></div><div class="tf-row" data-correct="false"><div class="tf-content"><b>d)</b> Một dao động điều hòa khác cùng phương là $y=10\sin\left(2x+\frac{\pi}{6}\right)$. Khi đó tổng hợp hai dao động là $y=5 \sqrt{2} + 5 \sqrt{6}\cos\left(2x+\frac{\pi}{12}\right)$.</div><div class="tf-buttons"><div class="btn-tf" onclick="checkTF(this, true)">Đ</div><div class="btn-tf" onclick="checkTF(this, false)">S</div></div></div></div><div class="actions-area"><button class="btn-action btn-reveal" onclick="revealAnswerTF(this)">👁 HIỆN ĐÁP ÁN</button><div class="slide-counter" id="counter-19">Câu ? / ?</div><button class="btn-action btn-explain" onclick="toggleExpl(this)">💡 XEM LỜI GIẢI</button></div><div class="explanation-box"><div class="explanation-title">📝 LỜI GIẢI CHI TIẾT:</div><div class="explanation-content">Cho dao động điều hòa có phương trình $y=10\sin 2x$. Xét tính đúng-sai của các khẳng định sau:<br><br>a) Giá trị của hàm số tại ${x=\frac{3 \pi}{4}}$ bằng ${-10}$.<br>b) Tập giá trị của hàm số là $\mathbb{R}$.<br>c)  Hàm số có thể viết dưới dạng $y=20\sin x \cos x$.<br>d)  Một dao động điều hòa khác cùng phương là $y=10\sin\left(2x+\frac{\pi}{6}\right)$. Khi đó tổng hợp hai dao động là $y=5 \sqrt{2} + 5 \sqrt{6}\cos\left(2x+\frac{\pi}{12}\right)$.<br><br>Lời giải:<br> a-đúng, b-sai, c-đúng, d-sai.<br><br> a) Khẳng định đã cho là khẳng định đúng.<br><br> Ta có $y(\frac{3 \pi}{4})=-10$.<br>b) Khẳng định đã cho là khẳng định sai.<br><br> Do $-1\le \sin 2x\le 1$ nên $-10\le y\le 10$. Vậy tập giá trị là $\left[-10;10\right]$.<br><br>c) Khẳng định đã cho là khẳng định đúng.<br><br> $y=10\sin 2x=20\sin x \cos x$.<br>d) Khẳng định đã cho là khẳng định sai.<br><br> $y=10\sin 2x+10\sin\left(2x+\frac{\pi}{6}\right)$<br><br>$=20\sin\left(\dfrac{2x+2x+\frac{\pi}{6}}{2}\right)\cos(- \frac{\pi}{12})$<br><br>$=5 \sqrt{2} + 5 \sqrt{6}\sin\left(2x+\frac{\pi}{12}\right)$.</div></div></div></div><div class="slide-container" id="slide-20"><div class="q-header"><div class="header-left"><div class="part-badge">PHẦN III (Trả lời ngắn)</div></div><div class="header-right"><button class="zoom-btn" onclick="changeFontSize(-2)" title="Giảm cỡ chữ">A-</button><button class="zoom-btn" onclick="changeFontSize(2)" title="Tăng cỡ chữ">A+</button><button class="timer-edit-btn" type="button" onclick="openTimerModal(this)" title="Thiết lập thời gian">🕘</button><div class="timer" onclick="startTimer(this)" ondblclick="editTimer(this)" data-time="60" title="Click: Chạy/Dừng. Click đúp: Thiết lập thời gian.">⏳ Bắt đầu (01:00)</div><button class="btn-exit-html" onclick="document.title='EXIT_FULL_SCREEN'" title="Thoát chế độ trình chiếu (Phím Esc)">❌ Thoát</button></div></div><div class="content-wrapper"><div class="question-content"><span class="q-label">Câu 1:</span> Tìm giá trị lớn nhất của hàm số $y=- 2 \cos^{2}{x } - 6 \cos{2 x }$.</div><div class="short-answer-area"><div class="input-group"><input type="text" class="answer-input" id="input-20" placeholder="Nhập kết quả..." onkeyup="handleEnter(event, 20, 'Ng==')"></div></div><div class="actions-area"><button class="btn-action btn-check" id="btn-chk-20" onclick="checkShort(this, 'Ng==')">✓ KIỂM TRA</button><button class="btn-action btn-reveal" onclick="revealShort(this, 'Ng==')">👁 ĐÁP ÁN</button><div class="slide-counter" id="counter-20">Câu ? / ?</div><button class="btn-action btn-explain" onclick="toggleExpl(this)">💡 XEM LỜI GIẢI</button></div><div class="explanation-box"><div class="explanation-title">📝 LỜI GIẢI CHI TIẾT:</div><div class="explanation-content">Tìm giá trị lớn nhất của hàm số $y=- 2 \cos^{2}{x } - 6 \cos{2 x }$.<br><br>Lời giải:<br> $\cos^2{x}=\dfrac{1+\cos2x}{2}$ nên<br><br>$y=-1-7\cos2x$.<br><br>Vì $\cos2x\in[-1;1]$ nên $y\in\left[-8;6\right]$.<br><br>Vậy $\min y=-8,\max y=6$.<br><br> <br>Đáp án: 6</div></div></div></div><div class="slide-container" id="slide-21"><div class="q-header"><div class="header-left"><div class="part-badge">PHẦN III (Trả lời ngắn)</div></div><div class="header-right"><button class="zoom-btn" onclick="changeFontSize(-2)" title="Giảm cỡ chữ">A-</button><button class="zoom-btn" onclick="changeFontSize(2)" title="Tăng cỡ chữ">A+</button><button class="timer-edit-btn" type="button" onclick="openTimerModal(this)" title="Thiết lập thời gian">🕘</button><div class="timer" onclick="startTimer(this)" ondblclick="editTimer(this)" data-time="60" title="Click: Chạy/Dừng. Click đúp: Thiết lập thời gian.">⏳ Bắt đầu (01:00)</div><button class="btn-exit-html" onclick="document.title='EXIT_FULL_SCREEN'" title="Thoát chế độ trình chiếu (Phím Esc)">❌ Thoát</button></div></div><div class="content-wrapper"><div class="question-content"><span class="q-label">Câu 2:</span> Tìm giá trị nhỏ nhất của hàm số $y=5 \sin^{2}{x } + 2 \cos{2 x }$(kết quả làm tròn đến hàng phần mười).</div><div class="short-answer-area"><div class="input-group"><input type="text" class="answer-input" id="input-21" placeholder="Nhập kết quả..." onkeyup="handleEnter(event, 21, 'LTIsNQ==')"></div></div><div class="actions-area"><button class="btn-action btn-check" id="btn-chk-21" onclick="checkShort(this, 'LTIsNQ==')">✓ KIỂM TRA</button><button class="btn-action btn-reveal" onclick="revealShort(this, 'LTIsNQ==')">👁 ĐÁP ÁN</button><div class="slide-counter" id="counter-21">Câu ? / ?</div><button class="btn-action btn-explain" onclick="toggleExpl(this)">💡 XEM LỜI GIẢI</button></div><div class="explanation-box"><div class="explanation-title">📝 LỜI GIẢI CHI TIẾT:</div><div class="explanation-content">Tìm giá trị nhỏ nhất của hàm số $y=5 \sin^{2}{x } + 2 \cos{2 x }$(kết quả làm tròn đến hàng phần mười).<br><br>Lời giải:<br> Ta có $\sin^2{x}=\dfrac{1-\cos2x}{2}$ nên<br><br>$y=- \frac{5}{2}+\frac{9}{2}\cos2x$.<br><br>Vì $\cos2x\in[-1;1]$ nên $y\in\left[- \frac{5}{2};2\right]$.<br><br>Vậy $\min y=- \frac{5}{2},\ \max y=2$.<br><br> <br>Đáp án: -2,5</div></div></div></div><div class="slide-container" id="slide-22"><div class="q-header"><div class="header-left"><div class="part-badge">PHẦN III (Trả lời ngắn)</div></div><div class="header-right"><button class="zoom-btn" onclick="changeFontSize(-2)" title="Giảm cỡ chữ">A-</button><button class="zoom-btn" onclick="changeFontSize(2)" title="Tăng cỡ chữ">A+</button><button class="timer-edit-btn" type="button" onclick="openTimerModal(this)" title="Thiết lập thời gian">🕘</button><div class="timer" onclick="startTimer(this)" ondblclick="editTimer(this)" data-time="60" title="Click: Chạy/Dừng. Click đúp: Thiết lập thời gian.">⏳ Bắt đầu (01:00)</div><button class="btn-exit-html" onclick="document.title='EXIT_FULL_SCREEN'" title="Thoát chế độ trình chiếu (Phím Esc)">❌ Thoát</button></div></div><div class="content-wrapper"><div class="question-content"><span class="q-label">Câu 3:</span> Tìm giá trị lớn nhất của hàm số $y=- 3 \sin^{2}{x } \cos^{2}{x } - 3$.</div><div class="short-answer-area"><div class="input-group"><input type="text" class="answer-input" id="input-22" placeholder="Nhập kết quả..." onkeyup="handleEnter(event, 22, 'LTM=')"></div></div><div class="actions-area"><button class="btn-action btn-check" id="btn-chk-22" onclick="checkShort(this, 'LTM=')">✓ KIỂM TRA</button><button class="btn-action btn-reveal" onclick="revealShort(this, 'LTM=')">👁 ĐÁP ÁN</button><div class="slide-counter" id="counter-22">Câu ? / ?</div><button class="btn-action btn-explain" onclick="toggleExpl(this)">💡 XEM LỜI GIẢI</button></div><div class="explanation-box"><div class="explanation-title">📝 LỜI GIẢI CHI TIẾT:</div><div class="explanation-content">Tìm giá trị lớn nhất của hàm số $y=- 3 \sin^{2}{x } \cos^{2}{x } - 3$.<br><br>Lời giải:<br> $\sin^2{x}\cos^2{x}=\dfrac{1}{4}\sin^2{2x}\in\left[0;\dfrac{1}{4}\right]$.<br><br>Suy ra $y=-3-3\sin^2{x}\cos^2{x}=-3- \frac{3}{4}\sin^2x\in\left[- \frac{15}{4};-3\right]$.<br><br>Vậy $\min y=- \frac{15}{4},\ \max y=-3$.<br><br> <br>Đáp án: -3</div></div></div></div><div class="slide-container" id="slide-23"><div class="q-header"><div class="header-left"><div class="part-badge">PHẦN III (Trả lời ngắn)</div></div><div class="header-right"><button class="zoom-btn" onclick="changeFontSize(-2)" title="Giảm cỡ chữ">A-</button><button class="zoom-btn" onclick="changeFontSize(2)" title="Tăng cỡ chữ">A+</button><button class="timer-edit-btn" type="button" onclick="openTimerModal(this)" title="Thiết lập thời gian">🕘</button><div class="timer" onclick="startTimer(this)" ondblclick="editTimer(this)" data-time="60" title="Click: Chạy/Dừng. Click đúp: Thiết lập thời gian.">⏳ Bắt đầu (01:00)</div><button class="btn-exit-html" onclick="document.title='EXIT_FULL_SCREEN'" title="Thoát chế độ trình chiếu (Phím Esc)">❌ Thoát</button></div></div><div class="content-wrapper"><div class="question-content"><span class="q-label">Câu 4:</span> Tìm giá trị nhỏ nhất của hàm số $y=4 \sin x - 4 \cos x - 5$(kết quả làm tròn đến hàng phần mười).</div><div class="short-answer-area"><div class="input-group"><input type="text" class="answer-input" id="input-23" placeholder="Nhập kết quả..." onkeyup="handleEnter(event, 23, 'LTEwLDc=')"></div></div><div class="actions-area"><button class="btn-action btn-check" id="btn-chk-23" onclick="checkShort(this, 'LTEwLDc=')">✓ KIỂM TRA</button><button class="btn-action btn-reveal" onclick="revealShort(this, 'LTEwLDc=')">👁 ĐÁP ÁN</button><div class="slide-counter" id="counter-23">Câu ? / ?</div><button class="btn-action btn-explain" onclick="toggleExpl(this)">💡 XEM LỜI GIẢI</button></div><div class="explanation-box"><div class="explanation-title">📝 LỜI GIẢI CHI TIẾT:</div><div class="explanation-content">Tìm giá trị nhỏ nhất của hàm số $y=4 \sin x   - 4 \cos x   - 5$(kết quả làm tròn đến hàng phần mười).<br><br>Lời giải:<br> $y=4 \sin x   - 4 \cos x   - 5$ có: $\max y= -5 + 4 \sqrt{2}, \min y =- 4 \sqrt{2} - 5$. <br>Đáp án: -10,7</div></div></div></div><div class="slide-container" id="slide-24"><div class="q-header"><div class="header-left"><div class="part-badge">PHẦN III (Trả lời ngắn)</div></div><div class="header-right"><button class="zoom-btn" onclick="changeFontSize(-2)" title="Giảm cỡ chữ">A-</button><button class="zoom-btn" onclick="changeFontSize(2)" title="Tăng cỡ chữ">A+</button><button class="timer-edit-btn" type="button" onclick="openTimerModal(this)" title="Thiết lập thời gian">🕘</button><div class="timer" onclick="startTimer(this)" ondblclick="editTimer(this)" data-time="60" title="Click: Chạy/Dừng. Click đúp: Thiết lập thời gian.">⏳ Bắt đầu (01:00)</div><button class="btn-exit-html" onclick="document.title='EXIT_FULL_SCREEN'" title="Thoát chế độ trình chiếu (Phím Esc)">❌ Thoát</button></div></div><div class="content-wrapper"><div class="question-content"><span class="q-label">Câu 5:</span> Tìm giá trị lớn nhất của hàm số $y=- 4 \sin^{2} x + \sin x - 2$ (kết quả làm tròn đến hàng phần mười).</div><div class="short-answer-area"><div class="input-group"><input type="text" class="answer-input" id="input-24" placeholder="Nhập kết quả..." onkeyup="handleEnter(event, 24, 'LTEsOQ==')"></div></div><div class="actions-area"><button class="btn-action btn-check" id="btn-chk-24" onclick="checkShort(this, 'LTEsOQ==')">✓ KIỂM TRA</button><button class="btn-action btn-reveal" onclick="revealShort(this, 'LTEsOQ==')">👁 ĐÁP ÁN</button><div class="slide-counter" id="counter-24">Câu ? / ?</div><button class="btn-action btn-explain" onclick="toggleExpl(this)">💡 XEM LỜI GIẢI</button></div><div class="explanation-box"><div class="explanation-title">📝 LỜI GIẢI CHI TIẾT:</div><div class="explanation-content">Tìm giá trị lớn nhất của hàm số $y=- 4 \sin^{2} x   + \sin x   - 2$ (kết quả làm tròn đến hàng phần mười).<br><br>Lời giải:<br> Đặt $t=\sin x \in [-1;1]$. Khi đó $y=- 4 t^{2} + t - 2$.<br><br>$y(-1)=-7, y(\frac{1}{8})=- \frac{31}{16}, y(1)=-5$.<br><br>$\min y=-7,\max y=- \frac{31}{16}$.<br>Đáp án: -1,9</div></div></div></div><div class="slide-container" id="slide-25"><div class="q-header"><div class="header-left"><div class="part-badge">PHẦN III (Trả lời ngắn)</div></div><div class="header-right"><button class="zoom-btn" onclick="changeFontSize(-2)" title="Giảm cỡ chữ">A-</button><button class="zoom-btn" onclick="changeFontSize(2)" title="Tăng cỡ chữ">A+</button><button class="timer-edit-btn" type="button" onclick="openTimerModal(this)" title="Thiết lập thời gian">🕘</button><div class="timer" onclick="startTimer(this)" ondblclick="editTimer(this)" data-time="60" title="Click: Chạy/Dừng. Click đúp: Thiết lập thời gian.">⏳ Bắt đầu (01:00)</div><button class="btn-exit-html" onclick="document.title='EXIT_FULL_SCREEN'" title="Thoát chế độ trình chiếu (Phím Esc)">❌ Thoát</button></div></div><div class="content-wrapper"><div class="question-content"><span class="q-label">Câu 6:</span> Tìm giá trị nhỏ nhất của hàm số $y=- 3 \cos^{2} x + 4 \cos x + 4$.</div><div class="short-answer-area"><div class="input-group"><input type="text" class="answer-input" id="input-25" placeholder="Nhập kết quả..." onkeyup="handleEnter(event, 25, 'LTM=')"></div></div><div class="actions-area"><button class="btn-action btn-check" id="btn-chk-25" onclick="checkShort(this, 'LTM=')">✓ KIỂM TRA</button><button class="btn-action btn-reveal" onclick="revealShort(this, 'LTM=')">👁 ĐÁP ÁN</button><div class="slide-counter" id="counter-25">Câu ? / ?</div><button class="btn-action btn-explain" onclick="toggleExpl(this)">💡 XEM LỜI GIẢI</button></div><div class="explanation-box"><div class="explanation-title">📝 LỜI GIẢI CHI TIẾT:</div><div class="explanation-content">Tìm giá trị nhỏ nhất của hàm số $y=- 3 \cos^{2} x   + 4 \cos x   + 4$.<br><br>Lời giải:<br> Đặt $t=\cos x \in [-1;1]$. Khi đó $y=- 3 t^{2} + 4 t + 4$.<br><br>$y(-1)=-3, y(\frac{2}{3})=\frac{16}{3}, y(1)=5$.<br><br>$\min y=-3,\max y=\frac{16}{3}$.<br>Đáp án: -3</div></div></div></div><div class="slide-container" id="slide-26"><div class="q-header"><div class="header-left"><div class="part-badge">PHẦN III (Trả lời ngắn)</div></div><div class="header-right"><button class="zoom-btn" onclick="changeFontSize(-2)" title="Giảm cỡ chữ">A-</button><button class="zoom-btn" onclick="changeFontSize(2)" title="Tăng cỡ chữ">A+</button><button class="timer-edit-btn" type="button" onclick="openTimerModal(this)" title="Thiết lập thời gian">🕘</button><div class="timer" onclick="startTimer(this)" ondblclick="editTimer(this)" data-time="60" title="Click: Chạy/Dừng. Click đúp: Thiết lập thời gian.">⏳ Bắt đầu (01:00)</div><button class="btn-exit-html" onclick="document.title='EXIT_FULL_SCREEN'" title="Thoát chế độ trình chiếu (Phím Esc)">❌ Thoát</button></div></div><div class="content-wrapper"><div class="question-content"><span class="q-label">Câu 7:</span> Tìm giá trị lớn nhất của hàm số $y=5 \sin^{4} x + 5 \cos^{4} x - 2$.</div><div class="short-answer-area"><div class="input-group"><input type="text" class="answer-input" id="input-26" placeholder="Nhập kết quả..." onkeyup="handleEnter(event, 26, 'Mw==')"></div></div><div class="actions-area"><button class="btn-action btn-check" id="btn-chk-26" onclick="checkShort(this, 'Mw==')">✓ KIỂM TRA</button><button class="btn-action btn-reveal" onclick="revealShort(this, 'Mw==')">👁 ĐÁP ÁN</button><div class="slide-counter" id="counter-26">Câu ? / ?</div><button class="btn-action btn-explain" onclick="toggleExpl(this)">💡 XEM LỜI GIẢI</button></div><div class="explanation-box"><div class="explanation-title">📝 LỜI GIẢI CHI TIẾT:</div><div class="explanation-content">Tìm giá trị lớn nhất của hàm số $y=5 \sin^{4} x   + 5 \cos^{4} x   - 2$.<br><br>Lời giải:<br> $\sin^4{x}+\cos^4{x}=(\sin^2{x}+\cos^2{x})^2-2\sin^2{x}\cos^2{x}=1-\dfrac12\sin^2{2x}\in\left[\dfrac12;1\right]$.<br><br>Suy ra $\min y=\frac{1}{2},\max y=3$.<br><br>Đáp án: 3</div></div></div></div><div class="slide-container" id="slide-27"><div class="q-header"><div class="header-left"><div class="part-badge">PHẦN III (Trả lời ngắn)</div></div><div class="header-right"><button class="zoom-btn" onclick="changeFontSize(-2)" title="Giảm cỡ chữ">A-</button><button class="zoom-btn" onclick="changeFontSize(2)" title="Tăng cỡ chữ">A+</button><button class="timer-edit-btn" type="button" onclick="openTimerModal(this)" title="Thiết lập thời gian">🕘</button><div class="timer" onclick="startTimer(this)" ondblclick="editTimer(this)" data-time="60" title="Click: Chạy/Dừng. Click đúp: Thiết lập thời gian.">⏳ Bắt đầu (01:00)</div><button class="btn-exit-html" onclick="document.title='EXIT_FULL_SCREEN'" title="Thoát chế độ trình chiếu (Phím Esc)">❌ Thoát</button></div></div><div class="content-wrapper"><div class="question-content"><span class="q-label">Câu 8:</span> Tìm giá trị lớn nhất của hàm số $y=- 2 \sin^{4} x + 2 \cos^{4} x - 4$.</div><div class="short-answer-area"><div class="input-group"><input type="text" class="answer-input" id="input-27" placeholder="Nhập kết quả..." onkeyup="handleEnter(event, 27, 'LTI=')"></div></div><div class="actions-area"><button class="btn-action btn-check" id="btn-chk-27" onclick="checkShort(this, 'LTI=')">✓ KIỂM TRA</button><button class="btn-action btn-reveal" onclick="revealShort(this, 'LTI=')">👁 ĐÁP ÁN</button><div class="slide-counter" id="counter-27">Câu ? / ?</div><button class="btn-action btn-explain" onclick="toggleExpl(this)">💡 XEM LỜI GIẢI</button></div><div class="explanation-box"><div class="explanation-title">📝 LỜI GIẢI CHI TIẾT:</div><div class="explanation-content">Tìm giá trị lớn nhất của hàm số $y=- 2 \sin^{4} x   + 2 \cos^{4} x   - 4$.<br><br>Lời giải:<br> $\sin^4{x}-\cos^4{x}=(\sin^2{x}-\cos^2{x})(\sin^2{x}+\cos^2{x})=\sin^2{x}-\cos^2{x}=-\cos{2x}\in[-1;1]$.<br><br>Suy ra $\max y=-2,\ \min y=-6$.<br><br>Đáp án: -2</div></div></div></div><div class="slide-container" id="slide-28"><div class="q-header"><div class="header-left"><div class="part-badge">PHẦN III (Trả lời ngắn)</div></div><div class="header-right"><button class="zoom-btn" onclick="changeFontSize(-2)" title="Giảm cỡ chữ">A-</button><button class="zoom-btn" onclick="changeFontSize(2)" title="Tăng cỡ chữ">A+</button><button class="timer-edit-btn" type="button" onclick="openTimerModal(this)" title="Thiết lập thời gian">🕘</button><div class="timer" onclick="startTimer(this)" ondblclick="editTimer(this)" data-time="60" title="Click: Chạy/Dừng. Click đúp: Thiết lập thời gian.">⏳ Bắt đầu (01:00)</div><button class="btn-exit-html" onclick="document.title='EXIT_FULL_SCREEN'" title="Thoát chế độ trình chiếu (Phím Esc)">❌ Thoát</button></div></div><div class="content-wrapper"><div class="question-content"><span class="q-label">Câu 9:</span> Tìm giá trị lớn nhất của hàm số $y=3 \sin^{6} x + 3 \cos^{6} x - 3$.</div><div class="short-answer-area"><div class="input-group"><input type="text" class="answer-input" id="input-28" placeholder="Nhập kết quả..." onkeyup="handleEnter(event, 28, 'MA==')"></div></div><div class="actions-area"><button class="btn-action btn-check" id="btn-chk-28" onclick="checkShort(this, 'MA==')">✓ KIỂM TRA</button><button class="btn-action btn-reveal" onclick="revealShort(this, 'MA==')">👁 ĐÁP ÁN</button><div class="slide-counter" id="counter-28">Câu ? / ?</div><button class="btn-action btn-explain" onclick="toggleExpl(this)">💡 XEM LỜI GIẢI</button></div><div class="explanation-box"><div class="explanation-title">📝 LỜI GIẢI CHI TIẾT:</div><div class="explanation-content">Tìm giá trị lớn nhất của hàm số $y=3 \sin^{6} x   + 3 \cos^{6} x   - 3$.<br><br>Lời giải:<br> $\sin^6{x}+\cos^6{x}=(\sin^2{x}+\cos^2{x})^3-3\sin^2{x}\cos^2{x}(\sin^2{x}+\cos^2{x})=1-\dfrac34\sin^2{2x}\in\left[\dfrac14;1\right]$.<br><br>Suy ra $\min y=- \frac{9}{4},\ \max y=0$.<br><br>Đáp án: 0</div></div></div></div><div class="slide-container" id="slide-29"><div class="q-header"><div class="header-left"><div class="part-badge">PHẦN III (Trả lời ngắn)</div></div><div class="header-right"><button class="zoom-btn" onclick="changeFontSize(-2)" title="Giảm cỡ chữ">A-</button><button class="zoom-btn" onclick="changeFontSize(2)" title="Tăng cỡ chữ">A+</button><button class="timer-edit-btn" type="button" onclick="openTimerModal(this)" title="Thiết lập thời gian">🕘</button><div class="timer" onclick="startTimer(this)" ondblclick="editTimer(this)" data-time="60" title="Click: Chạy/Dừng. Click đúp: Thiết lập thời gian.">⏳ Bắt đầu (01:00)</div><button class="btn-exit-html" onclick="document.title='EXIT_FULL_SCREEN'" title="Thoát chế độ trình chiếu (Phím Esc)">❌ Thoát</button></div></div><div class="content-wrapper"><div class="question-content"><span class="q-label">Câu 10:</span> Tìm giá trị nhỏ nhất của hàm số $y=- \sin^{6} x - 2 \sin^{4} x - \cos^{6} x - 2 \cos^{4} x + 2$.</div><div class="short-answer-area"><div class="input-group"><input type="text" class="answer-input" id="input-29" placeholder="Nhập kết quả..." onkeyup="handleEnter(event, 29, 'LTE=')"></div></div><div class="actions-area"><button class="btn-action btn-check" id="btn-chk-29" onclick="checkShort(this, 'LTE=')">✓ KIỂM TRA</button><button class="btn-action btn-reveal" onclick="revealShort(this, 'LTE=')">👁 ĐÁP ÁN</button><div class="slide-counter" id="counter-29">Câu ? / ?</div><button class="btn-action btn-explain" onclick="toggleExpl(this)">💡 XEM LỜI GIẢI</button></div><div class="explanation-box"><div class="explanation-title">📝 LỜI GIẢI CHI TIẾT:</div><div class="explanation-content">Tìm giá trị nhỏ nhất của hàm số $y=- \sin^{6} x   - 2 \sin^{4} x   - \cos^{6} x   - 2 \cos^{4} x   + 2$.<br><br>Lời giải:<br> $\sin^6{x}+\cos^6{x}=1-\dfrac34\sin^2{2x},$ $\sin^4{x}+\cos^4{x}=1-\dfrac12\sin^2{2x}$.<br><br>Suy ra<br><br>$y=1.75 \sin^2{2x} - 1.$<br><br>Vì $\sin^2{2x}\in[0;1]$ nên <br><br>$y\in\left[-1;\frac{3}{4}\right]$.<br><br>Đáp án: -1</div></div></div></div>
+</div>
+
+<div id="resultOverlay" class="result-overlay">
+  <div class="result-card">
+    <div class="result-head">
+      <div>
+        <div class="result-title">KẾT QUẢ BÀI LÀM</div>
+        <div id="resultStudentLine" style="margin-top:6px;color:#49627d;font-size:17px;font-weight:700"></div>
+      </div>
+    </div>
+    <div id="resultSummary" class="result-summary"></div>
+    <div style="overflow:auto">
+      <table class="result-table">
+        <thead>
+          <tr>
+            <th>STT</th>
+            <th>Loại</th>
+            <th>Nội dung trả lời</th>
+            <th>Đáp án đúng</th>
+            <th>Kết quả</th>
+            <th>Điểm</th>
+          </tr>
+        </thead>
+        <tbody id="resultTableBody"></tbody>
+      </table>
+    </div>
+    <div class="result-actions">
+      <button class="result-btn gray" onclick="returnToHome()">VỀ TRANG CHỦ</button>
+      <button class="result-btn gray" onclick="closeResultOverlay()">Đóng</button>
+      <button class="result-btn primary" onclick="window.print()">In kết quả</button>
+    </div>
+  </div>
+</div>
+
+<div id="rankingOverlay" class="ranking-overlay">
+  <div class="ranking-card">
+    <div class="ranking-head">
+      <div>
+        <div class="ranking-title">BẢNG XẾP HẠNG</div>
+        <div class="ranking-note" id="rankingSourceNote">Nguồn dữ liệu: chưa chọn file lưu kết quả.</div>
+      </div>
+    </div>
+    <div style="overflow:auto">
+      <table class="result-table">
+        <thead>
+          <tr>
+            <th>Hạng</th>
+            <th>Học sinh</th>
+            <th>Tổng điểm</th>
+            <th>Lần nộp</th>
+            <th>Thời điểm</th>
+          </tr>
+        </thead>
+        <tbody id="rankingTableBody"></tbody>
+      </table>
+    </div>
+    <div id="rankingEmpty" class="ranking-empty" style="display:none">Chưa có dữ liệu xếp hạng.</div>
+    <div class="result-actions">
+      <button class="result-btn gray" onclick="closeRankingOverlay()">Đóng</button>
+      <button class="result-btn gray" onclick="selectScoreFile()">Chọn file kết quả</button>
+      <button class="result-btn primary" onclick="createScoreFile()">Tạo file kết quả mới</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentSlide = 0, slides = [], timerInterval = null, examStarted = false, examSubmitted = false;
+let audioCtx = null;
+const SCORE_FILE_NAME = 'Bang_xep_hang_imath.json';
+let scoreFileHandle = null;
+const MUSIC_FILES = ["music_1.mp3", "music_2.mp3", "music_3.mp3"];
+let bgMusic = null;
+let currentMusicIndex = -1;
+let musicEnabled = true;
+
+function getAudioCtx(){ if(!audioCtx){ const Ctx = window.AudioContext || window.webkitAudioContext; if(Ctx) audioCtx = new Ctx(); } return audioCtx; }
+function playSound(type){
+  const ctx = getAudioCtx(); if(!ctx) return; if(ctx.state === 'suspended') ctx.resume();
+  const osc = ctx.createOscillator(), gain = ctx.createGain(), now = ctx.currentTime;
+  osc.connect(gain); gain.connect(ctx.destination);
+  if(type === 'correct'){ osc.type='sine'; osc.frequency.setValueAtTime(800,now); osc.frequency.exponentialRampToValueAtTime(1200,now+.1); gain.gain.setValueAtTime(.35,now); gain.gain.exponentialRampToValueAtTime(.01,now+.25); }
+  else if(type === 'wrong'){ osc.type='sawtooth'; osc.frequency.setValueAtTime(180,now); osc.frequency.exponentialRampToValueAtTime(110,now+.18); gain.gain.setValueAtTime(.28,now); gain.gain.exponentialRampToValueAtTime(.01,now+.25); }
+  else { osc.type='square'; osc.frequency.setValueAtTime(420,now); gain.gain.setValueAtTime(.25,now); gain.gain.exponentialRampToValueAtTime(.01,now+.4); }
+  osc.start(now); osc.stop(now+.4);
+}
+
+function setupBackgroundMusic(){
+  bgMusic = document.getElementById('bgMusic');
+  if(!bgMusic) return;
+  bgMusic.volume = 0.35;
+  bgMusic.addEventListener('ended', ()=>{
+    if(examStarted && !examSubmitted && musicEnabled){
+      playRandomBackgroundMusic();
+    }
+  });
+  bgMusic.addEventListener('error', ()=>{
+    console.log('Không phát được file nhạc:', bgMusic?.src || '');
+    if(examStarted && !examSubmitted && musicEnabled){
+      playRandomBackgroundMusic(true);
+    }
+  });
+}
+function stopBackgroundMusic(){
+  if(!bgMusic) return;
+  try{ bgMusic.pause(); }catch(e){}
+  try{ bgMusic.currentTime = 0; }catch(e){}
+}
+function playRandomBackgroundMusic(forceDifferent=false){
+  if(!musicEnabled) return;
+  if(!bgMusic) setupBackgroundMusic();
+  if(!bgMusic) return;
+  const files = Array.isArray(MUSIC_FILES) ? MUSIC_FILES.filter(Boolean) : [];
+  if(!files.length) return;
+  let idx = Math.floor(Math.random() * files.length);
+  if(forceDifferent && files.length > 1 && idx === currentMusicIndex){
+    idx = (idx + 1 + Math.floor(Math.random() * (files.length - 1))) % files.length;
+  }
+  currentMusicIndex = idx;
+  const chosen = files[idx];
+  bgMusic.src = encodeURI(chosen);
+  bgMusic.load();
+  const p = bgMusic.play();
+  if(p && typeof p.then === 'function'){
+    p.catch(err => console.log('Trình duyệt chặn phát nhạc hoặc không tìm thấy file:', chosen, err));
+  }
+}
+
+function normalizeAnswer(v){ return String(v ?? '').trim().toLowerCase().replace(/\s+/g,'').replace(/,/g,'.'); }
+function decodeB64(b64){ try{return decodeURIComponent(escape(atob(b64 || '')));}catch(e){return '';}}
+function escapeHtml(str){ return String(str ?? '').replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s])); }
+
+function getExamId(){
+  const title = document.title || 'Game';
+  return title.replace(/\.html?$/i,'').trim() || 'Game';
+}
+function getLocalRankingKey(){ return 'imath_ranking_' + getExamId(); }
+function safeJsonParse(raw, fallback){ try{ return JSON.parse(raw); }catch(e){ return fallback; } }
+function normalizeRankingRecords(records){
+  if(!Array.isArray(records)) return [];
+  return records.map((r, idx) => ({
+    student: String(r?.student || 'Chưa rõ').trim() || 'Chưa rõ',
+    totalScore: Number(r?.totalScore || 0),
+    submittedAt: String(r?.submittedAt || ''),
+    examId: String(r?.examId || getExamId()),
+    attemptId: String(r?.attemptId || `${Date.now()}_${idx}`),
+    details: Array.isArray(r?.details) ? r.details : []
+  }));
+}
+function compareRanking(a,b){
+  if((b.totalScore||0) !== (a.totalScore||0)) return (b.totalScore||0) - (a.totalScore||0);
+  const ta = Date.parse(a.submittedAt) || 0, tb = Date.parse(b.submittedAt) || 0;
+  return ta - tb;
+}
+function getStoredRankingLocal(){ return normalizeRankingRecords(safeJsonParse(localStorage.getItem(getLocalRankingKey()) || '[]', [])); }
+function setStoredRankingLocal(records){ localStorage.setItem(getLocalRankingKey(), JSON.stringify(normalizeRankingRecords(records))); }
+
+async function readScoreRecordsFromHandle(){
+  if(!scoreFileHandle) return null;
+  const file = await scoreFileHandle.getFile();
+  const txt = await file.text();
+  return normalizeRankingRecords(safeJsonParse(txt || '[]', []));
+}
+async function writeScoreRecordsToHandle(records){
+  if(!scoreFileHandle) return false;
+  const writable = await scoreFileHandle.createWritable();
+  await writable.write(JSON.stringify(normalizeRankingRecords(records), null, 2));
+  await writable.close();
+  return true;
+}
+async function ensureHandlePermission(mode='readwrite'){
+  if(!scoreFileHandle) return false;
+  if((await scoreFileHandle.queryPermission({mode})) === 'granted') return true;
+  return (await scoreFileHandle.requestPermission({mode})) === 'granted';
+}
+async function selectScoreFile(){
+  if(!window.showOpenFilePicker){
+    alert('Trình duyệt này không hỗ trợ chọn file kết quả. Hệ thống sẽ dùng bộ nhớ trình duyệt trên máy này.');
+    return false;
+  }
+  try{
+    const [handle] = await window.showOpenFilePicker({
+      multiple:false,
+      suggestedName:SCORE_FILE_NAME,
+      types:[{description:'JSON files', accept:{'application/json':['.json']}}]
+    });
+    scoreFileHandle = handle;
+    await ensureHandlePermission('readwrite');
+    const records = await readScoreRecordsFromHandle();
+    if(records === null){
+      await writeScoreRecordsToHandle([]);
+    }
+    updateRankingSourceNote();
+    return true;
+  }catch(err){
+    return false;
+  }
+}
+async function createScoreFile(){
+  if(!window.showSaveFilePicker){
+    alert('Trình duyệt này không hỗ trợ tạo file kết quả trực tiếp. Hệ thống sẽ dùng bộ nhớ trình duyệt trên máy này.');
+    return false;
+  }
+  try{
+    scoreFileHandle = await window.showSaveFilePicker({
+      suggestedName:SCORE_FILE_NAME,
+      types:[{description:'JSON files', accept:{'application/json':['.json']}}]
+    });
+    await ensureHandlePermission('readwrite');
+    await writeScoreRecordsToHandle([]);
+    updateRankingSourceNote();
+    alert('Đã tạo file kết quả. Thầy/cô nên lưu file này cùng thư mục chứa Game.html.');
+    return true;
+  }catch(err){
+    return false;
+  }
+}
+async function loadRankingRecords(){
+  if(scoreFileHandle && await ensureHandlePermission('readwrite')){
+    try{
+      const fileRecords = await readScoreRecordsFromHandle();
+      if(fileRecords) return fileRecords.filter(r => (r.examId || getExamId()) === getExamId());
+    }catch(err){}
+  }
+  return getStoredRankingLocal();
+}
+async function saveRankingRecord(record){
+  const localRecords = getStoredRankingLocal();
+  localRecords.push(record);
+  setStoredRankingLocal(localRecords);
+  if(scoreFileHandle && await ensureHandlePermission('readwrite')){
+    try{
+      const fileRecords = await readScoreRecordsFromHandle() || [];
+      fileRecords.push(record);
+      await writeScoreRecordsToHandle(fileRecords);
+    }catch(err){
+      console.warn('Không ghi được file kết quả:', err);
+    }
+  }
+}
+function updateRankingSourceNote(){
+  const el = document.getElementById('rankingSourceNote');
+  if(!el) return;
+  if(scoreFileHandle){
+    el.textContent = 'Nguồn dữ liệu: file ' + (scoreFileHandle.name || SCORE_FILE_NAME) + '.';
+  }else{
+    el.textContent = 'Nguồn dữ liệu: bộ nhớ trình duyệt trên máy này. Muốn lưu chung thư mục Game.html, hãy bấm “Tạo file kết quả mới” hoặc “Chọn file kết quả”.';
+  }
+}
+function formatDateTimeDisplay(v){
+  if(!v) return '';
+  const d = new Date(v);
+  if(isNaN(d.getTime())) return String(v);
+  return d.toLocaleString('vi-VN');
+}
+function buildRankingTable(records){
+  const body = document.getElementById('rankingTableBody');
+  const empty = document.getElementById('rankingEmpty');
+  if(!body || !empty) return;
+  const sorted = [...records].sort(compareRanking);
+  if(!sorted.length){
+    body.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+  body.innerHTML = sorted.map((r, idx) => {
+    const rank = idx + 1;
+    const rankCls = rank === 1 ? 'rank-1' : rank === 2 ? 'rank-2' : rank === 3 ? 'rank-3' : 'rank-other';
+    return `<tr>
+      <td><span class="rank-badge ${rankCls}">${rank}</span></td>
+      <td>${escapeHtml(r.student || 'Chưa rõ')}</td>
+      <td><b>${formatScore(Number(r.totalScore || 0))}</b></td>
+      <td>${idx + 1}</td>
+      <td>${escapeHtml(formatDateTimeDisplay(r.submittedAt))}</td>
+    </tr>`;
+  }).join('');
+}
+async function openRankingBoard(){
+  updateRankingSourceNote();
+  const records = await loadRankingRecords();
+  buildRankingTable(records);
+  document.getElementById('rankingOverlay').classList.add('show');
+}
+function closeRankingOverlay(){ document.getElementById('rankingOverlay').classList.remove('show'); }
+
+function startExam(){
+  const inp = document.getElementById('studentNameInput');
+  const name = (inp.value || '').trim();
+  if(!name){ inp.focus(); inp.style.borderColor = '#ef4444'; return; }
+  localStorage.setItem('imath_student_name', name);
+  document.getElementById('studentBadge').textContent = '👤 Học sinh: ' + name;
+  document.body.classList.remove('before-start');
+  document.getElementById('startScreen').style.display = 'none';
+  examStarted = true;
+  setupBackgroundMusic();
+  playRandomBackgroundMusic();
+  renderSlide(0);
+  updateProgress();
+}
+
+function renderSlide(i){
+  const all = document.querySelectorAll('.slide-container');
+  if(!all.length) return;
+  currentSlide = Math.max(0, Math.min(i, all.length - 1));
+  all.forEach((s, idx) => s.classList.toggle('active', idx === currentSlide));
+  all.forEach((s, idx) => { const c = s.querySelector('.slide-counter'); if(c) c.textContent = `Câu ${idx + 1} / ${all.length}`; });
+  updateProgress();
+  if(window.MathJax?.typesetPromise) MathJax.typesetPromise([all[currentSlide]]).catch(()=>{});
+}
+function nextSlide(){ if(!examStarted) return; renderSlide(currentSlide + 1); }
+function prevSlide(){ if(!examStarted) return; renderSlide(currentSlide - 1); }
+function changeFontSize(delta){
+  const root = document.documentElement; const styles = getComputedStyle(root);
+  const base = parseFloat(styles.getPropertyValue('--base-size')) || 32;
+  const opt = parseFloat(styles.getPropertyValue('--opt-size')) || 28;
+  root.style.setProperty('--base-size', Math.max(16, base + delta) + 'px');
+  root.style.setProperty('--opt-size', Math.max(14, opt + delta) + 'px');
+}
+function startTimer(el){
+  if(timerInterval){ clearInterval(timerInterval); timerInterval = null; el.classList.remove('running'); return; }
+  let timeLeft = parseInt(el.getAttribute('data-time') || '60', 10);
+  el.classList.add('running');
+  timerInterval = setInterval(()=>{
+    timeLeft -= 1;
+    if(timeLeft < 0){ clearInterval(timerInterval); timerInterval = null; el.classList.remove('running'); el.textContent = '⏰ Hết giờ'; playSound('timeup'); return; }
+    const mm = String(Math.floor(timeLeft / 60)).padStart(2,'0');
+    const ss = String(timeLeft % 60).padStart(2,'0');
+    el.textContent = `⏳ ${mm}:${ss}`;
+    el.setAttribute('data-time', String(timeLeft));
+  }, 1000);
+}
+function editTimer(el){
+  const raw = prompt('Nhập số phút cho bộ đếm giờ:', '1');
+  if(raw === null) return;
+  const minutes = Math.max(1, parseInt(raw, 10) || 1); const seconds = minutes * 60;
+  el.setAttribute('data-time', String(seconds));
+  el.textContent = `⏳ Bắt đầu (${String(minutes).padStart(2,'0')}:00)`;
+  if(timerInterval){ clearInterval(timerInterval); timerInterval = null; el.classList.remove('running'); }
+}
+function showFeedback(ok, slide){
+  let pop = slide.querySelector('.feedback-popup');
+  if(!pop){ pop = document.createElement('div'); pop.className = 'feedback-popup'; pop.innerHTML = '<div class="emoji"></div><div class="message"></div>'; slide.appendChild(pop); }
+  pop.className = 'feedback-popup ' + (ok ? 'correct' : 'wrong');
+  pop.querySelector('.emoji').textContent = ok ? '🎉' : '❌';
+  pop.querySelector('.message').textContent = ok ? 'Đã lưu lựa chọn' : 'Đã lưu lựa chọn';
+  requestAnimationFrame(()=>pop.classList.add('pop')); setTimeout(()=>pop.classList.remove('pop'), 650);
+}
+function checkChoice(btn, isCorrect){
+  const slide = btn.closest('.slide-container'); if(!slide || examSubmitted) return;
+  slide.querySelectorAll('.btn-option').forEach(b => b.classList.remove('selected-answer'));
+  btn.classList.add('selected-answer');
+  slide.dataset.answered = 'true';
+  showFeedback(true, slide);
+  updateProgress();
+}
+function revealAnswerMC(btn){
+  const slide = btn.closest('.slide-container');
+  const corr = slide.querySelector('.btn-option[data-correct="true"]');
+  if(corr) corr.classList.add('correct');
+  const selected = slide.querySelector('.btn-option.selected-answer');
+  if(selected && selected !== corr) selected.classList.add('wrong');
+}
+function checkTF(btn, userChoice){
+  const row = btn.closest('.tf-row'); const slide = btn.closest('.slide-container'); if(!row || examSubmitted) return;
+  row.querySelectorAll('.btn-tf').forEach(b => b.classList.remove('selected-answer','user-correct','user-wrong'));
+  btn.classList.add('selected-answer');
+  row.dataset.userChoice = String(userChoice);
+  const allRows = slide.querySelectorAll('.tf-row');
+  const done = Array.from(allRows).every(r => ['true','false'].includes(r.dataset.userChoice));
+  if(done) slide.dataset.answered = 'true';
+  showFeedback(true, slide); updateProgress();
+}
+function revealAnswerTF(btn){
+  const slide = btn.closest('.slide-container');
+  slide.querySelectorAll('.tf-row').forEach(row => {
+    const isTrue = row.getAttribute('data-correct') === 'true';
+    row.querySelectorAll('.btn-tf').forEach(b => {
+      if(b.innerText==='Đ' && isTrue) b.classList.add('reveal-true');
+      if(b.innerText==='S' && !isTrue) b.classList.add('reveal-false');
+    });
+    const selected = row.querySelector('.btn-tf.selected-answer');
+    if(selected){
+      const chosen = selected.innerText.trim() === 'Đ';
+      selected.classList.add(chosen === isTrue ? 'user-correct' : 'user-wrong');
+    }
+  });
+}
+function checkShort(btn, b64){
+  const slide = btn.closest('.slide-container'); const inp = slide.querySelector('input'); if(!inp || examSubmitted) return;
+  slide.dataset.answered = normalizeAnswer(inp.value) ? 'true' : 'false';
+  showFeedback(true, slide); updateProgress();
+}
+function revealShort(btn, b64){
+  const slide = btn.closest('.slide-container'); const input = slide.querySelector('input');
+  if(input) input.value = decodeB64(b64);
+}
+function toggleExpl(btn){ const box = btn.closest('.slide-container').querySelector('.explanation-box'); box.style.display = box.style.display==='block' ? 'none' : 'block'; }
+function handleEnter(e, id, b64){ if (e.key === 'Enter') checkShort(document.getElementById('btn-chk-'+id), b64); }
+function initSlides(data){ slides = Array.isArray(data) ? data : []; renderSlide(0); updateProgress(); }
+function initImageZoom(){ document.querySelectorAll('.real-image').forEach(img => img.addEventListener('wheel', function(e){ e.preventDefault(); let h = img.clientHeight; let delta = e.deltaY < 0 ? 40 : -40; let nh = h + delta; if(nh >= 150 && nh <= 1200){ img.style.maxHeight='none'; img.style.height = nh + 'px'; img.style.width='auto'; } })); }
+function updateProgress(){
+  const total = slides.length; let answered = 0;
+  document.querySelectorAll('.slide-container').forEach((slide, idx) => {
+    const type = slides[idx]?.type;
+    let ok = false;
+    if(type === 'mc') ok = !!slide.querySelector('.btn-option.selected-answer');
+    else if(type === 'tf') ok = Array.from(slide.querySelectorAll('.tf-row')).every(r => ['true','false'].includes(r.dataset.userChoice));
+    else if(type === 'short') ok = !!normalizeAnswer(slide.querySelector('input')?.value || '');
+    if(ok) answered += 1;
+  });
+  const el = document.getElementById('progressBadge'); if(el) el.textContent = `📝 Tiến độ: ${answered}/${total} câu`;
+}
+function getMcUserAnswer(slide){ const sel = slide.querySelector('.btn-option.selected-answer'); return sel ? (sel.querySelector('.opt-badge')?.textContent || '').trim() : 'Chưa trả lời'; }
+function getMcCorrectAnswer(slide){ const corr = slide.querySelector('.btn-option[data-correct="true"]'); return corr ? (corr.querySelector('.opt-badge')?.textContent || '').trim() : ''; }
+function getTfUserAnswer(slide){ return Array.from(slide.querySelectorAll('.tf-row')).map((row, i) => `${String.fromCharCode(97+i)}) ${row.dataset.userChoice === 'true' ? 'Đ' : row.dataset.userChoice === 'false' ? 'S' : '?'}`).join(' | '); }
+function getTfCorrectAnswer(slide){ return Array.from(slide.querySelectorAll('.tf-row')).map((row, i) => `${String.fromCharCode(97+i)}) ${row.dataset.correct === 'true' ? 'Đ' : 'S'}`).join(' | '); }
+function scoreTf(slide){ let score = 0; slide.querySelectorAll('.tf-row').forEach(row => { const chosen = row.dataset.userChoice; const correct = row.dataset.correct; const selected = row.querySelector('.btn-tf.selected-answer'); if(selected){ const ok = chosen === correct; selected.classList.add(ok ? 'user-correct' : 'user-wrong'); if(ok) score += 0.25; } }); return score; }
+function formatScore(num){ return (Math.round(num * 100) / 100).toFixed(2).replace(/\.00$/, '').replace('.', ','); }
+function submitExam(){
+  if(!examStarted || examSubmitted) return;
+  const total = slides.length;
+  const answered = document.getElementById('progressBadge')?.textContent || '';
+  const sure = confirm(`Bạn có chắc muốn nộp bài không?\n${answered}`);
+  if(!sure) return;
+  examSubmitted = true; document.body.classList.remove('before-submit'); document.body.classList.add('after-submit');
+  let totalScore = 0, details = [];
+  document.querySelectorAll('.slide-container').forEach((slide, idx) => {
+    const meta = slides[idx] || {}; let score = 0, userAns = 'Chưa trả lời', correctAns = '', result = false, typeLabel = '';
+    if(meta.type === 'mc'){
+      typeLabel = 'Trắc nghiệm'; userAns = getMcUserAnswer(slide); correctAns = getMcCorrectAnswer(slide);
+      const sel = slide.querySelector('.btn-option.selected-answer'); const corr = slide.querySelector('.btn-option[data-correct="true"]');
+      if(corr) corr.classList.add('correct'); if(sel && sel !== corr) sel.classList.add('wrong');
+      result = !!sel && !!corr && sel === corr; score = result ? 1 : 0;
+    }else if(meta.type === 'tf'){
+      typeLabel = 'Đúng-Sai'; userAns = getTfUserAnswer(slide); correctAns = getTfCorrectAnswer(slide);
+      score = scoreTf(slide); result = Math.abs(score - 1) < 1e-9;
+    }else{
+      typeLabel = 'Trả lời ngắn';
+      const input = slide.querySelector('input'); const user = normalizeAnswer(input?.value || ''); const corr = normalizeAnswer(meta.correct_answer || '');
+      userAns = (input?.value || '').trim() || 'Chưa trả lời'; correctAns = meta.correct_answer || '';
+      result = !!corr && user === corr; score = result ? 1 : 0;
+      if(input){ input.style.borderColor = result ? '#22c55e' : '#ef4444'; if(!result && meta.correct_answer) input.value = input.value || ''; }
+    }
+    totalScore += score;
+    details.push({ stt: idx + 1, typeLabel, userAns, correctAns, result, score });
+  });
+  buildResult(details, totalScore);
+  const resultRecord = {
+    student: localStorage.getItem('imath_student_name') || '',
+    totalScore,
+    submittedAt: new Date().toISOString(),
+    examId: getExamId(),
+    attemptId: 'attempt_' + Date.now() + '_' + Math.random().toString(36).slice(2,8),
+    details
+  };
+  localStorage.setItem('imath_last_result', JSON.stringify(resultRecord));
+  saveRankingRecord(resultRecord);
+  document.getElementById('floatingSubmitBtn').style.display = 'none';
+}
+function buildResult(details, totalScore){
+  const name = localStorage.getItem('imath_student_name') || 'Chưa rõ';
+  document.getElementById('resultStudentLine').textContent = `Học sinh: ${name}`;
+  const mcCount = slides.filter(x => x.type === 'mc').length;
+  const tfCount = slides.filter(x => x.type === 'tf').length;
+  const saCount = slides.filter(x => x.type === 'short').length;
+  document.getElementById('resultSummary').innerHTML = `
+    <div class="summary-box"><div class="k">Học sinh</div><div class="v" style="font-size:20px">${escapeHtml(name)}</div></div>
+    <div class="summary-box"><div class="k">Tổng điểm</div><div class="v">${formatScore(totalScore)}</div></div>
+    <div class="summary-box"><div class="k">Số câu TN</div><div class="v">${mcCount}</div></div>
+    <div class="summary-box"><div class="k">Số câu Đ-S</div><div class="v">${tfCount}</div></div>
+    <div class="summary-box"><div class="k">Số câu TLN</div><div class="v">${saCount}</div></div>
+    <div class="summary-box"><div class="k">Thời điểm nộp</div><div class="v" style="font-size:20px">${escapeHtml(new Date().toLocaleString('vi-VN'))}</div></div>`;
+  document.getElementById('resultTableBody').innerHTML = details.map(d => `
+    <tr>
+      <td>${d.stt}</td>
+      <td>${escapeHtml(d.typeLabel)}</td>
+      <td>${escapeHtml(d.userAns)}</td>
+      <td>${escapeHtml(d.correctAns)}</td>
+      <td>${d.result ? '<span class="badge-ok">Đúng</span>' : '<span class="badge-no">Sai</span>'}</td>
+      <td>${formatScore(d.score)}</td>
+    </tr>`).join('');
+  document.getElementById('resultOverlay').classList.add('show');
+}
+function closeResultOverlay(){ document.getElementById('resultOverlay').classList.remove('show'); }
+function returnToHome(){
+  closeResultOverlay();
+  closeRankingOverlay();
+  examStarted = false;
+  examSubmitted = false;
+  currentSlide = 0;
+  stopBackgroundMusic();
+  document.body.classList.add('before-start','before-submit');
+  document.body.classList.remove('after-submit');
+  const startScreen = document.getElementById('startScreen');
+  if(startScreen) startScreen.style.display = 'flex';
+  const submitBtn = document.getElementById('floatingSubmitBtn');
+  if(submitBtn) submitBtn.style.display = '';
+  document.querySelectorAll('.slide-container').forEach((slide, idx) => {
+    slide.classList.remove('active');
+    slide.dataset.answered = 'false';
+    slide.querySelectorAll('.btn-option').forEach(b => b.classList.remove('selected-answer','correct','wrong','disabled'));
+    slide.querySelectorAll('.tf-row').forEach(row => {
+      delete row.dataset.userChoice;
+      row.querySelectorAll('.btn-tf').forEach(b => b.classList.remove('selected-answer','user-correct','user-wrong','reveal-true','reveal-false'));
+    });
+    slide.querySelectorAll('input.answer-input, .short-answer-area input').forEach(inp => {
+      inp.value = '';
+      inp.style.borderColor = '#cdddeb';
+    });
+    slide.querySelectorAll('.explanation-box').forEach(box => box.style.display = 'none');
+  });
+  const timers = document.querySelectorAll('.timer');
+  if(timerInterval){ clearInterval(timerInterval); timerInterval = null; }
+  timers.forEach(el => {
+    el.classList.remove('running');
+    el.setAttribute('data-time','60');
+    el.textContent = '⏳ Bắt đầu (01:00)';
+  });
+  updateProgress();
+  const savedName = localStorage.getItem('imath_student_name') || '';
+  const input = document.getElementById('studentNameInput');
+  if(input){ input.value = ''; input.focus(); }
+  const badge = document.getElementById('studentBadge');
+  if(badge) badge.textContent = '👤 Học sinh: Chưa nhập';
+}
+
+let touchStartX = 0, touchEndX = 0;
+document.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; }, {passive: true});
+document.addEventListener('touchend', e => { if(document.activeElement?.tagName === 'INPUT') return; touchEndX = e.changedTouches[0].screenX; let diff = touchStartX - touchEndX; if (Math.abs(diff) > 60) { if (diff > 0) nextSlide(); else prevSlide(); } }, {passive: true});
+document.addEventListener('keydown', e => { if(!examStarted) return; if(e.key === 'ArrowRight') nextSlide(); if(e.key === 'ArrowLeft') prevSlide(); });
+window.addEventListener('DOMContentLoaded', function(){
+  try {
+    const savedName = localStorage.getItem('imath_student_name') || '';
+    document.getElementById('studentNameInput').value = savedName;
+    document.getElementById('studentBadge').textContent = '👤 Học sinh: ' + (savedName || 'Chưa nhập');
+    updateRankingSourceNote();
+    const data = [{"title": "Câu 1", "part": 1, "type": "mc", "content": "Tìm tập xác định của hàm số $y=\\frac{8 \\sin{ x } - 5}{\\cos{ x }}$.", "images": [], "explanation": "Tìm tập xác định của hàm số $y=\\frac{8 \\sin{ x } - 5}{\\cos{ x }}$.\n\nA. $D=\\mathbb{R}\\backslash\\{ k2\\pi,k\\in \\mathbb{Z} \\}$.\t   B. *$D=\\mathbb{R}\\backslash\\{\\frac{\\pi}{2}+ k\\pi,k\\in \\mathbb{Z} \\}$.\t    C. $D=\\mathbb{R}\\backslash\\{\\frac{\\pi}{2}+ k2\\pi,k\\in \\mathbb{Z} \\}$.\t     D. $D=\\mathbb{R}\\backslash\\{ k\\pi,k\\in \\mathbb{Z} \\}$.\n\nLời giải:\n Chọn B \n  \n\n", "options": [{"label": "A", "text": "$D=\\mathbb{R}\\backslash\\{ k2\\pi,k\\in \\mathbb{Z} \\}$.", "is_correct": false}, {"label": "B", "text": "$D=\\mathbb{R}\\backslash\\{\\frac{\\pi}{2}+ k\\pi,k\\in \\mathbb{Z} \\}$.", "is_correct": true}, {"label": "C", "text": "$D=\\mathbb{R}\\backslash\\{\\frac{\\pi}{2}+ k2\\pi,k\\in \\mathbb{Z} \\}$.", "is_correct": false}, {"label": "D", "text": "$D=\\mathbb{R}\\backslash\\{ k\\pi,k\\in \\mathbb{Z} \\}$.", "is_correct": false}], "correct_answer": "", "image_paths": [], "image_lookup": {}}, {"title": "Câu 2", "part": 1, "type": "mc", "content": "Tìm tập xác định của hàm số $y=\\frac{6 \\cos{ x } - 5}{\\sin{ 8 x }}$.", "images": [], "explanation": "Tìm tập xác định của hàm số $y=\\frac{6 \\cos{ x } - 5}{\\sin{ 8 x }}$.\n\nA. $D=\\mathbb{R}\\backslash\\{\\frac{\\pi}{2}+ k\\pi,k\\in \\mathbb{Z} \\}$.\t   B. *$D=\\mathbb{R}\\backslash\\{\\frac{k\\pi}{8},k\\in \\mathbb{Z} \\}$.\t    C. $D=\\mathbb{R}\\backslash\\{ k\\pi,k\\in \\mathbb{Z} \\}$.\t     D. $D=\\mathbb{R}\\backslash\\{\\frac{1}{16}\\pi+ k\\frac{\\pi}{8},k\\in \\mathbb{Z} \\}$.\n\nLời giải:\n Chọn B \n  \n\n", "options": [{"label": "A", "text": "$D=\\mathbb{R}\\backslash\\{\\frac{\\pi}{2}+ k\\pi,k\\in \\mathbb{Z} \\}$.", "is_correct": false}, {"label": "B", "text": "$D=\\mathbb{R}\\backslash\\{\\frac{k\\pi}{8},k\\in \\mathbb{Z} \\}$.", "is_correct": true}, {"label": "C", "text": "$D=\\mathbb{R}\\backslash\\{ k\\pi,k\\in \\mathbb{Z} \\}$.", "is_correct": false}, {"label": "D", "text": "$D=\\mathbb{R}\\backslash\\{\\frac{1}{16}\\pi+ k\\frac{\\pi}{8},k\\in \\mathbb{Z} \\}$.", "is_correct": false}], "correct_answer": "", "image_paths": [], "image_lookup": {}}, {"title": "Câu 3", "part": 1, "type": "mc", "content": "Tập xác định của hàm số $y=\\frac{1}{\\sin 3x}$ là", "images": [], "explanation": "Tập xác định của hàm số $y=\\frac{1}{\\sin 3x}$ là\n\nA. $D=\\mathbb{R}\\backslash \\{k\\frac{2 \\pi}{3}, k\\in \\mathbb{Z} \\}$.\t   B. *$D=\\mathbb{R}\\backslash \\{k\\frac{\\pi}{3}, k\\in \\mathbb{Z} \\}$.\n    C. $D=\\mathbb{R}\\backslash \\{- \\frac{\\pi}{6}+k\\frac{\\pi}{6}, k\\in \\mathbb{Z} \\}$.\t     D. $D=\\mathbb{R}\\backslash \\{- \\frac{\\pi}{6}+k3\\pi, k\\in \\mathbb{Z} \\}$.\n\nLời giải:\n Chọn B \n Điều kiện xác định:\n\n$\\sin 3x\\ne 0 \\Rightarrow 3 x\\ne k\\pi$\n\n$\\Rightarrow x\\ne k\\frac{\\pi}{3}$.\n\n$D=\\mathbb{R}\\backslash \\{k\\frac{\\pi}{3}, k\\in \\mathbb{Z} \\}$ \n\n", "options": [{"label": "A", "text": "$D=\\mathbb{R}\\backslash \\{k\\frac{2 \\pi}{3}, k\\in \\mathbb{Z} \\}$.", "is_correct": false}, {"label": "B", "text": "$D=\\mathbb{R}\\backslash \\{k\\frac{\\pi}{3}, k\\in \\mathbb{Z} \\}$.", "is_correct": true}, {"label": "C", "text": "$D=\\mathbb{R}\\backslash \\{- \\frac{\\pi}{6}+k\\frac{\\pi}{6}, k\\in \\mathbb{Z} \\}$.", "is_correct": false}, {"label": "D", "text": "$D=\\mathbb{R}\\backslash \\{- \\frac{\\pi}{6}+k3\\pi, k\\in \\mathbb{Z} \\}$.", "is_correct": false}], "correct_answer": "", "image_paths": [], "image_lookup": {}}, {"title": "Câu 4", "part": 1, "type": "mc", "content": "Tìm tập xác định của hàm số $y=\\tan(4x+5\\pi)$.", "images": [], "explanation": "Tìm tập xác định của hàm số $y=\\tan(4x+5\\pi)$.\n\nA. $D=\\mathbb{R}\\backslash\\{ - \\frac{9}{4}\\pi + k \\frac{1}{4}\\pi\\}$.\t   B. $D=\\mathbb{R}\\backslash\\{ -1\\pi + k \\frac{1}{4}\\pi\\}$.\t    C. $D=\\mathbb{R}\\backslash\\{ - \\frac{1}{2}\\pi + k \\frac{1}{4}\\pi\\}$.\t     D. *$D=\\mathbb{R}\\backslash\\{ - \\frac{9}{8}\\pi + k \\frac{1}{4}\\pi\\}$.\n\nLời giải:\n Chọn D \n  \n\n", "options": [{"label": "A", "text": "$D=\\mathbb{R}\\backslash\\{ - \\frac{9}{4}\\pi + k \\frac{1}{4}\\pi\\}$.", "is_correct": false}, {"label": "B", "text": "$D=\\mathbb{R}\\backslash\\{ -1\\pi + k \\frac{1}{4}\\pi\\}$.", "is_correct": false}, {"label": "C", "text": "$D=\\mathbb{R}\\backslash\\{ - \\frac{1}{2}\\pi + k \\frac{1}{4}\\pi\\}$.", "is_correct": false}, {"label": "D", "text": "$D=\\mathbb{R}\\backslash\\{ - \\frac{9}{8}\\pi + k \\frac{1}{4}\\pi\\}$.", "is_correct": true}], "correct_answer": "", "image_paths": [], "image_lookup": {}}, {"title": "Câu 5", "part": 1, "type": "mc", "content": "Tìm giá trị nhỏ nhất của hàm số ${y=-4\\sin5x +10}$.", "images": [], "explanation": "Tìm giá trị nhỏ nhất của hàm số ${y=-4\\sin5x +10}$. \n\nA. ${-16}$.\t   B. *${6}$.\t    C. ${8}$.\t     D. ${14}$.\n\nLời giải:\n Chọn B \n  \n\n", "options": [{"label": "A", "text": "${-16}$.", "is_correct": false}, {"label": "B", "text": "${6}$.", "is_correct": true}, {"label": "C", "text": "${8}$.", "is_correct": false}, {"label": "D", "text": "${14}$.", "is_correct": false}], "correct_answer": "", "image_paths": [], "image_lookup": {}}, {"title": "Câu 6", "part": 1, "type": "mc", "content": "Tìm giá trị nhỏ nhất của hàm số ${y=9\\cos^22x +10}$.", "images": [], "explanation": "Tìm giá trị nhỏ nhất của hàm số ${y=9\\cos^22x +10}$. \n\nA. *${10}$.\t   B. ${\\frac{181}{10}}$.\t    C. ${\\frac{163}{10}}$.\t     D. ${\\frac{79}{5}}$.\n\nLời giải:\n Chọn A \n Thay $\\cos^22x=0$ và $\\cos^22x=1$ vào hàm số ta được:\n\n$\\max y= 19, \\min y =10$. \n\n", "options": [{"label": "A", "text": "${10}$.", "is_correct": true}, {"label": "B", "text": "${\\frac{181}{10}}$.", "is_correct": false}, {"label": "C", "text": "${\\frac{163}{10}}$.", "is_correct": false}, {"label": "D", "text": "${\\frac{79}{5}}$.", "is_correct": false}], "correct_answer": "", "image_paths": [], "image_lookup": {}}, {"title": "Câu 7", "part": 1, "type": "mc", "content": "Tìm giá trị lớn nhất của hàm số $y=- 5 \\sin x - 2 \\cos x $.", "images": [], "explanation": "Tìm giá trị lớn nhất của hàm số $y=- 5 \\sin x   - 2 \\cos x  $.\n\nA. ${\\frac{45}{64}}$.\t   B. ${- \\sqrt{29}}$.\t    C. ${-2}$.\t     D. *${\\sqrt{29}}$.\n\nLời giải:\n Chọn D \n $y=- 5 \\sin x   - 2 \\cos x  $ có: $\\max y= \\sqrt{29}, \\min y =-\\sqrt{29}$. \n\n", "options": [{"label": "A", "text": "${\\frac{45}{64}}$.", "is_correct": false}, {"label": "B", "text": "${- \\sqrt{29}}$.", "is_correct": false}, {"label": "C", "text": "${-2}$.", "is_correct": false}, {"label": "D", "text": "${\\sqrt{29}}$.", "is_correct": true}], "correct_answer": "", "image_paths": [], "image_lookup": {}}, {"title": "Câu 8", "part": 1, "type": "mc", "content": "Tìm giá trị nhỏ nhất của hàm số $y=- 5 \\sin x - 4 \\cos x + 2$.", "images": [], "explanation": "Tìm giá trị nhỏ nhất của hàm số $y=- 5 \\sin x   - 4 \\cos x   + 2$.\n\nA. *${2 - \\sqrt{41}}$.\t   B. ${-3}$.\t    C. ${2 + \\sqrt{41}}$.\t     D. ${\\frac{307}{128}}$.\n\nLời giải:\n Chọn A \n $y=- 5 \\sin x   - 4 \\cos x   + 2$ có: $\\max y= 2 + \\sqrt{41}, \\min y =2 - \\sqrt{41}$. \n\n", "options": [{"label": "A", "text": "${2 - \\sqrt{41}}$.", "is_correct": true}, {"label": "B", "text": "${-3}$.", "is_correct": false}, {"label": "C", "text": "${2 + \\sqrt{41}}$.", "is_correct": false}, {"label": "D", "text": "${\\frac{307}{128}}$.", "is_correct": false}], "correct_answer": "", "image_paths": [], "image_lookup": {}}, {"title": "Câu 9", "part": 1, "type": "mc", "content": "Tìm giá trị lớn nhất của hàm số $y=- 3 \\sin^{2}{x } \\cos^{2}{x } - 9$.", "images": [], "explanation": "Tìm giá trị lớn nhất của hàm số $y=- 3 \\sin^{2}{x } \\cos^{2}{x } - 9$.\n\nA. ${-3}$.\t   B. *${-9}$.\t    C. ${1}$.\t     D. ${- \\frac{39}{4}}$.\n\nLời giải:\n Chọn B\n Ta có $\\sin^2{x}\\cos^2{x}=\\dfrac{1}{4}\\sin^2{2x}\\in\\left[0;\\dfrac{1}{4}\\right]$.\n\nSuy ra $y=-9-3\\sin^2{x}\\cos^2{x}=-9- \\frac{3}{4}\\sin^2x\\in\\left[- \\frac{39}{4};-9\\right]$.\n\nVậy $\\min y=- \\frac{39}{4},\\ \\max y=-9$.\n\n\n\n", "options": [{"label": "A", "text": "${-3}$.", "is_correct": false}, {"label": "B", "text": "${-9}$.", "is_correct": true}, {"label": "C", "text": "${1}$.", "is_correct": false}, {"label": "D", "text": "${- \\frac{39}{4}}$.", "is_correct": false}], "correct_answer": "", "image_paths": [], "image_lookup": {}}, {"title": "Câu 10", "part": 1, "type": "mc", "content": "Tìm giá trị lớn nhất của hàm số $y=2 \\sin^{2}{x } + 2 \\cos{2 x }$.", "images": [], "explanation": "Tìm giá trị lớn nhất của hàm số $y=2 \\sin^{2}{x } + 2 \\cos{2 x }$.\n\nA. ${-11}$.\t   B. ${\\frac{15}{2}}$.\t    C. *${2}$.\t     D. ${0}$.\n\nLời giải:\n Chọn C\n Ta có $\\sin^2{x}=\\dfrac{1-\\cos2x}{2}$ nên\n\n$y=1+1\\cos2x$.\n\nVì $\\cos2x\\in[-1;1]$ nên $y\\in\\left[0;2\\right]$.\n\nVậy $\\min y=0,\\ \\max y=2$.\n\n\n\n", "options": [{"label": "A", "text": "${-11}$.", "is_correct": false}, {"label": "B", "text": "${\\frac{15}{2}}$.", "is_correct": false}, {"label": "C", "text": "${2}$.", "is_correct": true}, {"label": "D", "text": "${0}$.", "is_correct": false}], "correct_answer": "", "image_paths": [], "image_lookup": {}}, {"title": "Câu 11", "part": 1, "type": "mc", "content": "Tìm giá trị lớn nhất của hàm số $y=2 \\cos^{2}{x } - 5 \\cos{2 x }$.", "images": [], "explanation": "Tìm giá trị lớn nhất của hàm số $y=2 \\cos^{2}{x } - 5 \\cos{2 x }$.\n\nA. $2$.\t   B. *$5$.\t    C. $-3$.\t     D. $4$.\n\nLời giải:\n Chọn B\n $\\cos^2{x}=\\dfrac{1+\\cos2x}{2}$ nên\n\n$y=1-4\\cos2x$.\n\nVì $\\cos2x\\in[-1;1]$ nên $y\\in\\left[-3;5\\right]$.\n\nVậy $\\min y=-3,\\max y=5$.\n\n\n\n", "options": [{"label": "A", "text": "$2$.", "is_correct": false}, {"label": "B", "text": "$5$.", "is_correct": true}, {"label": "C", "text": "$-3$.", "is_correct": false}, {"label": "D", "text": "$4$.", "is_correct": false}], "correct_answer": "", "image_paths": [], "image_lookup": {}}, {"title": "Câu 12", "part": 1, "type": "mc", "content": "Tập giá trị của hàm số $y=- 2 \\cos{\\left(x + \\frac{\\pi}{3} \\right)} - 5$ là", "images": [], "explanation": "Tập giá trị của hàm số $y=- 2 \\cos{\\left(x + \\frac{\\pi}{3} \\right)} - 5$ là\n\nA. ${[-9;0]}$.\t   B. *${[-7;-3]}$.\t    C. ${[-9;-3]}$.\t     D. ${[-7;-1]}$.\n\nLời giải:\n Chọn B \n $-1\\le \\cos{\\left(x + \\frac{\\pi}{3} \\right)} \\le 1 \\Rightarrow -2 \\le - 2 \\cos{\\left(x + \\frac{\\pi}{3} \\right)} \\le 2 $$\\Rightarrow -7\\le - 2 \\cos{\\left(x + \\frac{\\pi}{3} \\right)} - 5 \\le -3$.\n\nVậy tập giá trị của hàm số là $T=[-7;-3]$. \n\n", "options": [{"label": "A", "text": "${[-9;0]}$.", "is_correct": false}, {"label": "B", "text": "${[-7;-3]}$.", "is_correct": true}, {"label": "C", "text": "${[-9;-3]}$.", "is_correct": false}, {"label": "D", "text": "${[-7;-1]}$.", "is_correct": false}], "correct_answer": "", "image_paths": [], "image_lookup": {}}, {"title": "Câu 13", "part": 1, "type": "mc", "content": "Hàm số nào sau đây là hàm số chẵn?", "images": [], "explanation": "Hàm số nào sau đây là hàm số chẵn?\nA. $y=\\sin x +\\tan x $.\t   B. *$y=\\cos^2 x -\\cos x $.\n    C. $y=\\sin x +\\cos x $.\t     D. $y=\\tan x $.\n\nLời giải:\n Chọn B\n Ta có $y=\\cos^2 x -\\cos x $ là hàm số chẵn vì $f(-{x})=f({x})$ với mọi ${x}$ thuộc tập xác định.\n\n", "options": [{"label": "A", "text": "$y=\\sin x +\\tan x $.", "is_correct": false}, {"label": "B", "text": "$y=\\cos^2 x -\\cos x $.", "is_correct": true}, {"label": "C", "text": "$y=\\sin x +\\cos x $.", "is_correct": false}, {"label": "D", "text": "$y=\\tan x $.", "is_correct": false}], "correct_answer": "", "image_paths": [], "image_lookup": {}}, {"title": "Câu 14", "part": 1, "type": "mc", "content": "Hàm số nào sau đây là hàm số lẻ?", "images": [], "explanation": "Hàm số nào sau đây là hàm số lẻ?\nA. $y=\\sin x +\\cos x $.\t   B. *$y=\\sin x $.\n    C. $y=\\sin^2 x +2$.\t     D. $y=\\cot x +\\cos x $.\n\nLời giải:\n Chọn B\n Ta có $y=\\sin x $ là hàm số lẻ vì $f(-{x})=-f({x})$ với mọi ${x}$ thuộc tập xác định.\n\n", "options": [{"label": "A", "text": "$y=\\sin x +\\cos x $.", "is_correct": false}, {"label": "B", "text": "$y=\\sin x $.", "is_correct": true}, {"label": "C", "text": "$y=\\sin^2 x +2$.", "is_correct": false}, {"label": "D", "text": "$y=\\cot x +\\cos x $.", "is_correct": false}], "correct_answer": "", "image_paths": [], "image_lookup": {}}, {"title": "Câu 15", "part": 1, "type": "mc", "content": "Hàm số $y=- 9 \\cot{\\left(3 x \\right)}$ có chu kỳ tuần hoàn là", "images": [], "explanation": "Hàm số $y=- 9 \\cot{\\left(3 x \\right)}$ có chu kỳ tuần hoàn là\n\nA. $6 \\pi$.\t   B. $\\frac{2 \\pi}{3}$.\n    C. $3 \\pi$.\t     D. *$\\frac{\\pi}{3}$.\n\nLời giải:\n Chọn D \n Hàm số đã cho có chu kỳ tuần hoàn là: $T=\\dfrac{\\pi }{|3|}=\\frac{\\pi}{3}$. \n\n", "options": [{"label": "A", "text": "$6 \\pi$.", "is_correct": false}, {"label": "B", "text": "$\\frac{2 \\pi}{3}$.", "is_correct": false}, {"label": "C", "text": "$3 \\pi$.", "is_correct": false}, {"label": "D", "text": "$\\frac{\\pi}{3}$.", "is_correct": true}], "correct_answer": "", "image_paths": [], "image_lookup": {}}, {"title": "Câu 1", "part": 2, "type": "tf", "content": "Cho hàm số $y=4 \\cos{\\left(2 x \\right)} + 7$ . Xét tính đúng-sai của các khẳng định sau.", "images": [], "explanation": "Cho hàm số $y=4 \\cos{\\left(2 x \\right)} + 7$ . Xét tính đúng-sai của các khẳng định sau. \n\na) * Hàm số có tập xác định là $D=\\mathbb{R}$.\nb) Giá trị lớn nhất của hàm số bằng ${15}$.\nc) * Giá trị nhỏ nhất của hàm số bằng ${3}$.\nd) * Tập giá trị của hàm số là $T=[3;11]$.\n\nLời giải:\n a-đúng, b-sai, c-đúng, d-đúng.\n\n\n a) Khẳng định đã cho là khẳng định đúng.\n\n Hàm số có tập xác định là $D=\\mathbb{R}$\nb) Khẳng định đã cho là khẳng định sai.\n\n $-1\\le \\cos{\\left(2 x \\right)} \\le 1 \\Rightarrow -4 \\le 4 \\cos{\\left(2 x \\right)} \\le 4 $$\\Rightarrow 3\\le 4 \\cos{\\left(2 x \\right)} + 7 \\le 11$.\n\nVậy giá trị lớn nhất của hàm số bằng ${11}$\nc) Khẳng định đã cho là khẳng định đúng.\n\n $-1\\le \\cos{\\left(2 x \\right)} \\le 1 \\Rightarrow -4 \\le 4 \\cos{\\left(2 x \\right)} \\le 4 $$\\Rightarrow 3\\le 4 \\cos{\\left(2 x \\right)} + 7 \\le 11$.\n\nVậy giá trị nhỏ nhất của hàm số bằng ${3}$\nd) Khẳng định đã cho là khẳng định đúng.\n\n Vì $ 3\\le 4 \\cos{\\left(2 x \\right)} + 7 \\le 11$ nên tập giá trị của hàm số là $T=[3;11]$.\n \n\n", "options": [{"label": "a)", "text": "Hàm số có tập xác định là $D=\\mathbb{R}$.", "is_correct": true}, {"label": "b)", "text": "Giá trị lớn nhất của hàm số bằng ${15}$.", "is_correct": false}, {"label": "c)", "text": "Giá trị nhỏ nhất của hàm số bằng ${3}$.", "is_correct": true}, {"label": "d)", "text": "Tập giá trị của hàm số là $T=[3;11]$.", "is_correct": true}], "correct_answer": "", "image_paths": [], "image_lookup": {}}, {"title": "Câu 2", "part": 2, "type": "tf", "content": "Cho hàm số $y=6 - 4 \\sin^{2}{\\left(x \\right)}$ . Xét tính đúng-sai của các khẳng định sau.", "images": [], "explanation": "Cho hàm số $y=6 - 4 \\sin^{2}{\\left(x \\right)}$ . Xét tính đúng-sai của các khẳng định sau. \n\na) Hàm số có tập xác định là $D=[-3;10]$ .\nb) Giá trị lớn nhất của hàm số bằng ${8}$.\nc)  Giá trị nhỏ nhất của hàm số bằng ${1}$.\nd) Tập giá trị của hàm số là $T=[1;8]$.\n\nLời giải:\n a-sai, b-sai, c-sai, d-sai.\n\n\n a) Khẳng định đã cho là khẳng định sai.\n\n Hàm số có tập xác định là $D=\\mathbb{R}$\nb) Khẳng định đã cho là khẳng định sai.\n\n $0\\le \\sin^{2}{\\left(x \\right)} \\le 1 $$\\Rightarrow 2\\le 6 - 4 \\sin^{2}{\\left(x \\right)} \\le 6$.\n\nVậy giá trị lớn nhất của hàm số bằng ${6}$\nc) Khẳng định đã cho là khẳng định sai.\n\n $0\\le \\sin^{2}{\\left(x \\right)} \\le 1 $$\\Rightarrow 2\\le 6 - 4 \\sin^{2}{\\left(x \\right)} \\le 6$.\n\nVậy giá trị nhỏ nhất của hàm số bằng ${2}$\nd) Khẳng định đã cho là khẳng định sai.\n\n Vì $ 2\\le 6 - 4 \\sin^{2}{\\left(x \\right)} \\le 6$ nên tập giá trị của hàm số là $T=[2;6]$.\n \n\n", "options": [{"label": "a)", "text": "Hàm số có tập xác định là $D=[-3;10]$ .", "is_correct": false}, {"label": "b)", "text": "Giá trị lớn nhất của hàm số bằng ${8}$.", "is_correct": false}, {"label": "c)", "text": "Giá trị nhỏ nhất của hàm số bằng ${1}$.", "is_correct": false}, {"label": "d)", "text": "Tập giá trị của hàm số là $T=[1;8]$.", "is_correct": false}], "correct_answer": "", "image_paths": [], "image_lookup": {}}, {"title": "Câu 3", "part": 2, "type": "tf", "content": "Cho hàm số $y=- 4 \\sin{\\left(3 x \\right)} - 8$ . Xét tính đúng-sai của các khẳng định sau.", "images": [], "explanation": "Cho hàm số $y=- 4 \\sin{\\left(3 x \\right)} - 8$ . Xét tính đúng-sai của các khẳng định sau. \n\na) Tập xác định của hàm số là $D=[-4;4]$.\nb) Hàm số đã cho là hàm số lẻ.\nc) * Tập giá trị của hàm số đã cho là $T={[-12;-4]}$.\nd)  Đồ thị cắt trục tung tại điểm có tung độ bằng ${-7}$.\n\nLời giải:\n a-sai, b-sai, c-đúng, d-sai.\n\n\n a) Khẳng định đã cho là khẳng định sai.\n\n Tập xác định của hàm số là $D=\\mathbb{R}$.\nb) Khẳng định đã cho là khẳng định sai.\n\n Ta có: Với mọi $x\\in \\mathbb{R}$ thì $-x\\in \\mathbb{R}$.\n\n$f(-x)=4 \\sin{\\left(3 x \\right)} - 8\\ne f(x), f(-x)\\ne -f(x)$.\n\nVậy hàm số $y=- 4 \\sin{\\left(3 x \\right)} - 8$ là hàm số không chẵn, không lẻ.\nc) Khẳng định đã cho là khẳng định đúng.\n\n Ta có: $-12 \\le - 4 \\sin{\\left(3 x \\right)} - 8 \\le -4$ nên tập giá trị là ${[-12;-4]}$\nd) Khẳng định đã cho là khẳng định sai.\n\n Cho $x=0\\Rightarrow y=-8$. Suy ra đồ thị cắt trục tung tại điểm có tung độ bằng ${-8}$.\n \n\n", "options": [{"label": "a)", "text": "Tập xác định của hàm số là $D=[-4;4]$.", "is_correct": false}, {"label": "b)", "text": "Hàm số đã cho là hàm số lẻ.", "is_correct": false}, {"label": "c)", "text": "Tập giá trị của hàm số đã cho là $T={[-12;-4]}$.", "is_correct": true}, {"label": "d)", "text": "Đồ thị cắt trục tung tại điểm có tung độ bằng ${-7}$.", "is_correct": false}], "correct_answer": "", "image_paths": [], "image_lookup": {}}, {"title": "Câu 4", "part": 2, "type": "tf", "content": "Cho dao động điều hòa có phương trình $y=46\\cos 2x$. Xét tính đúng-sai của các khẳng định sau:", "images": [], "explanation": "Cho dao động điều hòa có phương trình $y=46\\cos 2x$. Xét tính đúng-sai của các khẳng định sau:\n\na) Giá trị của hàm số tại ${x=\\frac{2 \\pi}{3}}$ bằng ${-21}$.\nb) Tập giá trị của hàm số là ${\\left[0;46\\right]}$.\nc) Hàm số có thể viết dưới dạng $y=46\\left(2\\sin^2x-1\\right)$.\nd) * Một dao động điều hòa khác cùng phương là $y=46\\cos\\left(2x+\\frac{5 \\pi}{6}\\right)$. Khi đó tổng hợp hai dao động là $y=- 23 \\sqrt{2} + 23 \\sqrt{6}\\cos\\left(2x+\\frac{5 \\pi}{12}\\right)$.\n\nLời giải:\n a-sai, b-sai, c-sai, d-đúng.\n\n\n a) Khẳng định đã cho là khẳng định sai.\n\n Ta có $y(\\frac{2 \\pi}{3})=-23$.\nb) Khẳng định đã cho là khẳng định sai.\n\n Do $-1\\le \\cos2x\\le 1$ nên $-46\\le y\\le 46$. Vậy tập giá trị là $\\left[-46;46\\right]$.\n\n\nc) Khẳng định đã cho là khẳng định sai.\n\n $y=46(2\\cos^2x-1)=46\\left(1-2\\sin^2x\\right)=46\\left(\\cos^2x-\\sin^2x\\right)$.\nd) Khẳng định đã cho là khẳng định đúng.\n\n $y=46\\cos 2x+46\\cos\\left(2x+\\frac{5 \\pi}{6}\\right)$\n\n$=92\\cos\\left(\\dfrac{2x+2x+\\frac{5 \\pi}{6}}{2}\\right)\\cos(- \\frac{5 \\pi}{12})$\n\n$=- 23 \\sqrt{2} + 23 \\sqrt{6}\\cos\\left(2x+\\frac{5 \\pi}{12}\\right)$.\n \n\n", "options": [{"label": "a)", "text": "Giá trị của hàm số tại ${x=\\frac{2 \\pi}{3}}$ bằng ${-21}$.", "is_correct": false}, {"label": "b)", "text": "Tập giá trị của hàm số là ${\\left[0;46\\right]}$.", "is_correct": false}, {"label": "c)", "text": "Hàm số có thể viết dưới dạng $y=46\\left(2\\sin^2x-1\\right)$.", "is_correct": false}, {"label": "d)", "text": "Một dao động điều hòa khác cùng phương là $y=46\\cos\\left(2x+\\frac{5 \\pi}{6}\\right)$. Khi đó tổng hợp hai dao động là $y=- 23 \\sqrt{2} + 23 \\sqrt{6}\\cos\\left(2x+\\frac{5 \\pi}{12}\\right)$.", "is_correct": true}], "correct_answer": "", "image_paths": [], "image_lookup": {}}, {"title": "Câu 5", "part": 2, "type": "tf", "content": "Cho dao động điều hòa có phương trình $y=10\\sin 2x$. Xét tính đúng-sai của các khẳng định sau:", "images": [], "explanation": "Cho dao động điều hòa có phương trình $y=10\\sin 2x$. Xét tính đúng-sai của các khẳng định sau:\n\na) *Giá trị của hàm số tại ${x=\\frac{3 \\pi}{4}}$ bằng ${-10}$.\nb) Tập giá trị của hàm số là $\\mathbb{R}$.\nc) * Hàm số có thể viết dưới dạng $y=20\\sin x \\cos x$.\nd)  Một dao động điều hòa khác cùng phương là $y=10\\sin\\left(2x+\\frac{\\pi}{6}\\right)$. Khi đó tổng hợp hai dao động là $y=5 \\sqrt{2} + 5 \\sqrt{6}\\cos\\left(2x+\\frac{\\pi}{12}\\right)$.\n\nLời giải:\n a-đúng, b-sai, c-đúng, d-sai.\n\n\n a) Khẳng định đã cho là khẳng định đúng.\n\n Ta có $y(\\frac{3 \\pi}{4})=-10$.\nb) Khẳng định đã cho là khẳng định sai.\n\n Do $-1\\le \\sin 2x\\le 1$ nên $-10\\le y\\le 10$. Vậy tập giá trị là $\\left[-10;10\\right]$.\n\n\nc) Khẳng định đã cho là khẳng định đúng.\n\n $y=10\\sin 2x=20\\sin x \\cos x$.\nd) Khẳng định đã cho là khẳng định sai.\n\n $y=10\\sin 2x+10\\sin\\left(2x+\\frac{\\pi}{6}\\right)$\n\n$=20\\sin\\left(\\dfrac{2x+2x+\\frac{\\pi}{6}}{2}\\right)\\cos(- \\frac{\\pi}{12})$\n\n$=5 \\sqrt{2} + 5 \\sqrt{6}\\sin\\left(2x+\\frac{\\pi}{12}\\right)$.\n \n\n", "options": [{"label": "a)", "text": "Giá trị của hàm số tại ${x=\\frac{3 \\pi}{4}}$ bằng ${-10}$.", "is_correct": true}, {"label": "b)", "text": "Tập giá trị của hàm số là $\\mathbb{R}$.", "is_correct": false}, {"label": "c)", "text": "Hàm số có thể viết dưới dạng $y=20\\sin x \\cos x$.", "is_correct": true}, {"label": "d)", "text": "Một dao động điều hòa khác cùng phương là $y=10\\sin\\left(2x+\\frac{\\pi}{6}\\right)$. Khi đó tổng hợp hai dao động là $y=5 \\sqrt{2} + 5 \\sqrt{6}\\cos\\left(2x+\\frac{\\pi}{12}\\right)$.", "is_correct": false}], "correct_answer": "", "image_paths": [], "image_lookup": {}}, {"title": "Câu 1", "part": 3, "type": "short", "content": "Tìm giá trị lớn nhất của hàm số $y=- 2 \\cos^{2}{x } - 6 \\cos{2 x }$.", "images": [], "explanation": "Tìm giá trị lớn nhất của hàm số $y=- 2 \\cos^{2}{x } - 6 \\cos{2 x }$.\n\nLời giải:\n $\\cos^2{x}=\\dfrac{1+\\cos2x}{2}$ nên\n\n$y=-1-7\\cos2x$.\n\nVì $\\cos2x\\in[-1;1]$ nên $y\\in\\left[-8;6\\right]$.\n\nVậy $\\min y=-8,\\max y=6$.\n\n \nĐáp án: 6\n\n", "options": [], "correct_answer": "6", "image_paths": [], "image_lookup": {}}, {"title": "Câu 2", "part": 3, "type": "short", "content": "Tìm giá trị nhỏ nhất của hàm số $y=5 \\sin^{2}{x } + 2 \\cos{2 x }$(kết quả làm tròn đến hàng phần mười).", "images": [], "explanation": "Tìm giá trị nhỏ nhất của hàm số $y=5 \\sin^{2}{x } + 2 \\cos{2 x }$(kết quả làm tròn đến hàng phần mười).\n\nLời giải:\n Ta có $\\sin^2{x}=\\dfrac{1-\\cos2x}{2}$ nên\n\n$y=- \\frac{5}{2}+\\frac{9}{2}\\cos2x$.\n\nVì $\\cos2x\\in[-1;1]$ nên $y\\in\\left[- \\frac{5}{2};2\\right]$.\n\nVậy $\\min y=- \\frac{5}{2},\\ \\max y=2$.\n\n \nĐáp án: -2,5\n\n", "options": [], "correct_answer": "-2,5", "image_paths": [], "image_lookup": {}}, {"title": "Câu 3", "part": 3, "type": "short", "content": "Tìm giá trị lớn nhất của hàm số $y=- 3 \\sin^{2}{x } \\cos^{2}{x } - 3$.", "images": [], "explanation": "Tìm giá trị lớn nhất của hàm số $y=- 3 \\sin^{2}{x } \\cos^{2}{x } - 3$.\n\nLời giải:\n $\\sin^2{x}\\cos^2{x}=\\dfrac{1}{4}\\sin^2{2x}\\in\\left[0;\\dfrac{1}{4}\\right]$.\n\nSuy ra $y=-3-3\\sin^2{x}\\cos^2{x}=-3- \\frac{3}{4}\\sin^2x\\in\\left[- \\frac{15}{4};-3\\right]$.\n\nVậy $\\min y=- \\frac{15}{4},\\ \\max y=-3$.\n\n \nĐáp án: -3\n\n", "options": [], "correct_answer": "-3", "image_paths": [], "image_lookup": {}}, {"title": "Câu 4", "part": 3, "type": "short", "content": "Tìm giá trị nhỏ nhất của hàm số $y=4 \\sin x - 4 \\cos x - 5$(kết quả làm tròn đến hàng phần mười).", "images": [], "explanation": "Tìm giá trị nhỏ nhất của hàm số $y=4 \\sin x   - 4 \\cos x   - 5$(kết quả làm tròn đến hàng phần mười).\n\nLời giải:\n $y=4 \\sin x   - 4 \\cos x   - 5$ có: $\\max y= -5 + 4 \\sqrt{2}, \\min y =- 4 \\sqrt{2} - 5$. \nĐáp án: -10,7\n\n", "options": [], "correct_answer": "-10,7", "image_paths": [], "image_lookup": {}}, {"title": "Câu 5", "part": 3, "type": "short", "content": "Tìm giá trị lớn nhất của hàm số $y=- 4 \\sin^{2} x + \\sin x - 2$ (kết quả làm tròn đến hàng phần mười).", "images": [], "explanation": "Tìm giá trị lớn nhất của hàm số $y=- 4 \\sin^{2} x   + \\sin x   - 2$ (kết quả làm tròn đến hàng phần mười).\n\nLời giải:\n Đặt $t=\\sin x \\in [-1;1]$. Khi đó $y=- 4 t^{2} + t - 2$.\n\n$y(-1)=-7, y(\\frac{1}{8})=- \\frac{31}{16}, y(1)=-5$.\n\n$\\min y=-7,\\max y=- \\frac{31}{16}$.\nĐáp án: -1,9\n\n", "options": [], "correct_answer": "-1,9", "image_paths": [], "image_lookup": {}}, {"title": "Câu 6", "part": 3, "type": "short", "content": "Tìm giá trị nhỏ nhất của hàm số $y=- 3 \\cos^{2} x + 4 \\cos x + 4$.", "images": [], "explanation": "Tìm giá trị nhỏ nhất của hàm số $y=- 3 \\cos^{2} x   + 4 \\cos x   + 4$.\n\nLời giải:\n Đặt $t=\\cos x \\in [-1;1]$. Khi đó $y=- 3 t^{2} + 4 t + 4$.\n\n$y(-1)=-3, y(\\frac{2}{3})=\\frac{16}{3}, y(1)=5$.\n\n$\\min y=-3,\\max y=\\frac{16}{3}$.\nĐáp án: -3\n\n", "options": [], "correct_answer": "-3", "image_paths": [], "image_lookup": {}}, {"title": "Câu 7", "part": 3, "type": "short", "content": "Tìm giá trị lớn nhất của hàm số $y=5 \\sin^{4} x + 5 \\cos^{4} x - 2$.", "images": [], "explanation": "Tìm giá trị lớn nhất của hàm số $y=5 \\sin^{4} x   + 5 \\cos^{4} x   - 2$.\n\nLời giải:\n $\\sin^4{x}+\\cos^4{x}=(\\sin^2{x}+\\cos^2{x})^2-2\\sin^2{x}\\cos^2{x}=1-\\dfrac12\\sin^2{2x}\\in\\left[\\dfrac12;1\\right]$.\n\nSuy ra $\\min y=\\frac{1}{2},\\max y=3$.\n\n\nĐáp án: 3\n\n", "options": [], "correct_answer": "3", "image_paths": [], "image_lookup": {}}, {"title": "Câu 8", "part": 3, "type": "short", "content": "Tìm giá trị lớn nhất của hàm số $y=- 2 \\sin^{4} x + 2 \\cos^{4} x - 4$.", "images": [], "explanation": "Tìm giá trị lớn nhất của hàm số $y=- 2 \\sin^{4} x   + 2 \\cos^{4} x   - 4$.\n\nLời giải:\n $\\sin^4{x}-\\cos^4{x}=(\\sin^2{x}-\\cos^2{x})(\\sin^2{x}+\\cos^2{x})=\\sin^2{x}-\\cos^2{x}=-\\cos{2x}\\in[-1;1]$.\n\nSuy ra $\\max y=-2,\\ \\min y=-6$.\n\n\nĐáp án: -2\n\n", "options": [], "correct_answer": "-2", "image_paths": [], "image_lookup": {}}, {"title": "Câu 9", "part": 3, "type": "short", "content": "Tìm giá trị lớn nhất của hàm số $y=3 \\sin^{6} x + 3 \\cos^{6} x - 3$.", "images": [], "explanation": "Tìm giá trị lớn nhất của hàm số $y=3 \\sin^{6} x   + 3 \\cos^{6} x   - 3$.\n\nLời giải:\n $\\sin^6{x}+\\cos^6{x}=(\\sin^2{x}+\\cos^2{x})^3-3\\sin^2{x}\\cos^2{x}(\\sin^2{x}+\\cos^2{x})=1-\\dfrac34\\sin^2{2x}\\in\\left[\\dfrac14;1\\right]$.\n\nSuy ra $\\min y=- \\frac{9}{4},\\ \\max y=0$.\n\n\nĐáp án: 0\n\n", "options": [], "correct_answer": "0", "image_paths": [], "image_lookup": {}}, {"title": "Câu 10", "part": 3, "type": "short", "content": "Tìm giá trị nhỏ nhất của hàm số $y=- \\sin^{6} x - 2 \\sin^{4} x - \\cos^{6} x - 2 \\cos^{4} x + 2$.", "images": [], "explanation": "Tìm giá trị nhỏ nhất của hàm số $y=- \\sin^{6} x   - 2 \\sin^{4} x   - \\cos^{6} x   - 2 \\cos^{4} x   + 2$.\n\nLời giải:\n $\\sin^6{x}+\\cos^6{x}=1-\\dfrac34\\sin^2{2x},$ $\\sin^4{x}+\\cos^4{x}=1-\\dfrac12\\sin^2{2x}$.\n\nSuy ra\n\n$y=1.75 \\sin^2{2x} - 1.$\n\nVì $\\sin^2{2x}\\in[0;1]$ nên \n\n$y\\in\\left[-1;\\frac{3}{4}\\right]$.\n\n\nĐáp án: -1\n\n", "options": [], "correct_answer": "-1", "image_paths": [], "image_lookup": {}}];
+    initSlides(data); initImageZoom();
+  } catch(err) {
+    document.body.innerHTML = "<div style='padding:30px; text-align:center; font-family:sans-serif;'><h2 style='color:#dc2626; font-size:24px;'>⚠️ LỖI HIỂN THỊ</h2><p style='font-size:18px; color:#334155;'>Không thể tải giao diện bài thi.</p></div>";
+  }
+});
+</script>
+</body>
+</html>
